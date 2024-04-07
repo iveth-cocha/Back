@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//Modelo Agente
+model Agente {
+  Cedula           Int      @unique @id 
+  Grado            String   @db.VarChar(255)
+  Apellido_Nombre  String   @db.VarChar(255) 
+  mapeos           Mapeo[]       // Relación uno a muchos con mapeo
+  usuarios         Usuario[]      // Relación uno a muchos con usuarios
+  delegaciones     Delegacion[]   // Relación uno a muchos con delegaciones
+}
+
+//Modelo Usuario
+model Usuario {
+  id         Int       @id @default(autoincrement())
+  nombre     String    @db.VarChar(255)
+  email      String    @unique @db.VarChar(255)
+  password   String    @db.VarChar(255)
+  Rol        RolEnum
+  agente     Agente    @relation(fields: [agenteID], references: [Cedula])
+  agenteID   Int
+}
+
+
+enum RolEnum {
+  ADMINISTRADOR
+  VISUALIZADOR
+  REGISTRADOR
+}
+
+//Modelo Mapeo
+model Mapeo {
+  id              Int       @id @default(autoincrement())
+  agente          Agente    @relation(fields: [agenteID], references: [Cedula])
+  agenteID        Int
+  cedula          Int       @map(name: "Cedula") // Campo para almacenar la cédula del agente
+  nombreAgente    String    @map(name: "Apellido_Nombre") @db.VarChar(255) // Campo para almacenar el nombre del agente
+  grado           String    @map(name: "Grado") @db.VarChar(255) // Campo para almacenar el grado del agente
+  Rol             RolEnum
+  fechaHora       DateTime  @default(now())
+  accionRealizada String    @db.VarChar(255)
+}
+
+//Modelo Delegacion
+model Delegacion {
+  id                                         Int        @id @default(autoincrement())
+  anio_ingreso                               Int
+  orden                                      Int
+  mes_ingreso                                String?
+  numero_investigacion_previa                String?    @db.VarChar(255)
+  numero_instruccion_fiscal                  String?    @db.VarChar(255)
+  grado_agente                               String     @db.VarChar(255)
+  apellidos_nombres_agente                   String     @db.VarChar(255)
+  zona                                       String?    @db.VarChar(255)
+  provincia                                  String?    @db.VarChar(255)
+  canton                                     String?    @db.VarChar(255)
+  cod_distrito                               String?    @db.VarChar(255)
+  distrito                                   String?    @db.VarChar(255)
+  tipo_delito                                String?    @db.VarChar(255)
+  delito_tipificado_delegacion               String?    @db.VarChar(255)
+  delito_desagregacion_policia_judicial      String?    @db.VarChar(255)
+  fecha_infraccion_delito                    DateTime?
+  apellidos_nombres_victima                  String?    @db.VarChar(255)
+  sexo_victima                               String?    @db.VarChar(255)
+  edad_victima                               Int?
+  apellidos_nombres_sospechoso               String?    @db.VarChar(255)
+  condicion_infractor_involucrado            String?    @db.VarChar(255)
+  parentesco_detenido_sospechoso_victima     String?    @db.VarChar(255)
+  alias_sospechoso                           String?    @db.VarChar(255)
+  placa_vehiculo_involucrado                 String?    @db.VarChar(255)
+  apellidos_nombres_fiscal                   String?    @db.VarChar(255)
+  unidad_especializada                       String?    @db.VarChar(255)
+  fecha_delegacion                           DateTime?
+  fecha_recepcion_pj                         DateTime?
+  fecha_recepcion_agente_investigador        DateTime?
+  no_oficio_recibe_diligencia                String?    @db.VarChar(255)
+  plazo_otorgado_dias                        Int?    
+  numero_articulo                            String?    @db.VarChar(255)
+  articulos_cumplidos                        String?    @db.VarChar(255)
+  cumplimiento_parcial                       String?    @db.VarChar(255)
+  cumplimiento_total                         String?    @db.VarChar(255)
+  fecha_cumplimiento                         DateTime?
+  en_investigacion                           String?    @db.VarChar(255)
+  numero_oficio_descargo                     String?    @db.VarChar(255)
+  versiones                                  Int?
+  reconocimientos_lugar_hechos               Int?
+  determino_posibles_responsables            String?    @db.VarChar(255)
+  comparecencia_sospechoso                   String?    @db.VarChar(255)
+  peticiones_fiscalia                        String?    @db.VarChar(255)
+  tipo_peticion                              String?    @db.VarChar(255)
+  no_boletas_solicitadas                     Int?
+  nombre_requerido_boleta                    String?    @db.VarChar(255)
+  no_detenidos_producto_investigacion        Int?
+  apellidos_nombres_detenidos_producto       String?    @db.VarChar(255)
+  allanamientos_numero                       Int?
+  recuperacion_bienes_evidencias             Int?
+  recuperacion_automotores                   Int?
+  recuperacion_otros                         Int?
+  peritajes                                  Int?
+  notificaciones                             Int?
+  citaciones                                 Int?
+  traslados                                  Int?
+  informe_descargo                           String?    @db.VarChar(255)
+  causas_incumplimiento_investigacion        String?    @db.VarChar(255)
+  observaciones                              String?    @db.VarChar(255)
+  cantidad_sustraida                         String?    @db.VarChar(255)
+  entidad_financiera                         String?    @db.VarChar(255)
+  agente                                     Agente     @relation(fields: [agenteID], references: [Cedula])
+  agenteID                                   Int
+}
+
+//Modelo Delito
+model Delito {
+    id       Int      @id @default(autoincrement())
+  delito     String   @db.VarChar(255)
+  seccion    String?  @db.VarChar(255)
+}
+
+//Modelo Localidad
+model Localidad {
+  id               Int      @id @default(autoincrement())
+  cod_subcircuito  String?  @db.VarChar(255)
+  zona             String?  @db.VarChar(255)
+  subzona          String?  @db.VarChar(255)
+  canton           String?  @db.VarChar(255)
+  cod_distrito     String?  @db.VarChar(255)
+  distrito         String?  @db.VarChar(255)
+  circuito         String?  @db.VarChar(255)
+  sub_circuito     String?  @db.VarChar(255)
+  cod_circuito     String?  @db.VarChar(255)
+}
+
+model Ficalia{
+  id Int @id
+  fiscalia String @db.VarChar(255)
+}
