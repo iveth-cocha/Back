@@ -2,8 +2,8 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors';
-import usuarioRoutes from '../src/routers/usuarioRouters.js';
-
+import usuarioRouters from '../src/routers/usuarioRouters.js';
+import delegacionRouters from '../src/routers/delegacionRouters.js';
 
 
 // Inicializaciones
@@ -22,7 +22,9 @@ app.use(express.json())
 
 
 // Rutas 
-app.use('/api', usuarioRoutes);
+app.use('/api', usuarioRouters);
+app.use('/api', delegacionRouters);
+
 
 app.get('/',(req,res)=>{
     res.send("Server on")
