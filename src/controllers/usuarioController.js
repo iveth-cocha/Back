@@ -1,4 +1,4 @@
-import { encrypPassword,matchPassword, generarToken } from '../middlewares/bcrypt.js';
+import { Password, encrypPassword,matchPassword, generarToken } from '../middlewares/bcrypt.js';
 import sendMailToUser  from '../config/nodemailer.js'; 
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
@@ -60,10 +60,10 @@ export const login = async (req, res) => {
 
 // Registro un nuevo usuario
 export const registro = async (req, res) => {
-  const { nombre, email, password, rol, agenteID } = req.body;
+  const { agenteID, nombre, email, rol } = req.body;
 
   // Verificar si todos los campos están llenos
-  if (!nombre || !email || !password || !rol || !agenteID) {
+  if (!nombre || !email || !rol || !agenteID) {
       return res.status(400).json({ msg: "Lo sentimos, debes llenar todos los campos" });
   }
   
@@ -94,9 +94,11 @@ export const registro = async (req, res) => {
       if (!agenteExistente) {
           return res.status(400).json({ msg: "El agente con la cédula proporcionada no existe" });
       }
+      // Generar una contraseña aleatoria
+      const passwordRandom = Password(); // Aquí generas la contraseña aleatoria
 
       // Cifrar la contraseña
-      const passwordEncrypted = await encrypPassword(password);
+      const passwordEncrypted = await encrypPassword(passwordRandom);
 
       // Crear un nuevo usuario en la base de datos
       const nuevoUsuario = await prisma.usuario.create({
@@ -125,7 +127,7 @@ export const registro = async (req, res) => {
       });
 
       // Enviar correo electrónico de confirmación
-      await sendMailToUser(email, token);
+      await sendMailToUser(email, token, passwordRandom);
       
       res.status(200).json({ msg: "Revisa tu correo electrónico para confirmar tu cuenta" });
     } catch (error) {

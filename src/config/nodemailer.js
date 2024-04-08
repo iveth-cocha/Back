@@ -12,24 +12,28 @@ let transporter = nodemailer.createTransport({
     },
 });
 
-export const sendMailToUser = async (userMail, token) => {
+export const sendMailToUser = async (email, token, passwordRandom) => {
     try {
+        // Construir el enlace de confirmación con el token y la contraseña aleatoria
+        const confirmationLink = `${process.env.URL_BACKEND}confirmar/${encodeURIComponent(token)}`;
+
         let mailOptions = {
             from: process.env.USER_MAILTRAP,
-            to: userMail,
-            subject: "Verifica tu cuenta",
-            html: `<p>Hola, haz clic <a href="${process.env.URL_BACKEND}confirmar/${encodeURIComponent(token)}">aquí</a> para confirmar tu cuenta.</p>`
+            to: email,
+            subject: "Verifica tu cuenta y tu contraseña temporal",
+            html: `<p>Hola, haz clic <a href="${confirmationLink}">aquí</a> para confirmar tu cuenta. <br> 
+            Tu contraseña temporal es: ${passwordRandom}. Úsala para acceder a tu cuenta. No olvides cambiarla después.</p>`
         };
 
         transporter.sendMail(mailOptions, function(error, info){
             if (error) {
-                console.log(error);
+                console.error('Error al enviar el correo electrónico:', error);
             } else {
-                console.log('Correo enviado: ' + info.response);
+                console.log('Correo electrónico enviado:', info.response);
             }
         });
     } catch (error) {
-        console.error("Error al enviar el correo electrónico:", error);
+        console.error('Error al enviar el correo electrónico:', error);
     }
 };
 
