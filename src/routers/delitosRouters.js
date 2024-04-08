@@ -4,19 +4,19 @@ import { registrarDelito,detalleDelito, actualizarDelito, eliminarDelito, listar
 const router = Router();
 
 // Ruta para crear un nuevo usuario
-router.post('/registro/delegacion', registrarDelito);
+router.post('/registro/delito', registrarDelito);
 
 // Ruta para ver el detalle de un usuario
-router.get('/detalle/delegacion/:id', detalleDelito );
+router.get('/detalle/delito/:id', detalleDelito );
 
 // Ruta para actualizar un usuario
-router.put('/actualizar/delegacion/:id', actualizarDelito );
+router.put('/actualizar/delito/:id', actualizarDelito );
 
 // Ruta para eliminar un usuario
-router.delete('/eliminar/delegacion/:id',eliminarDelito);
+router.delete('/eliminar/delito/:id',eliminarDelito);
 
 // Ruta para listar los usuarios
-router.get('/delegaciones', listarDelitos);
+router.get('/delitos', listarDelitos);
 
 
 
