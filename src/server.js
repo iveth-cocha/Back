@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import cors from 'cors';
 import usuarioRouters from '../src/routers/usuarioRouters.js';
 import delegacionRouters from '../src/routers/delegacionRouters.js';
+import delitosRouters from '../src/routers/delitosRouters.js';
 
 
 // Inicializaciones
@@ -24,6 +25,8 @@ app.use(express.json())
 // Rutas 
 app.use('/api', usuarioRouters);
 app.use('/api', delegacionRouters);
+app.use('/api', delitosRouters);
+
 
 
 app.get('/',(req,res)=>{

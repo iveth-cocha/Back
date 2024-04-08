@@ -53,7 +53,7 @@ try {
 }
 };
 
-// Eliminar una delegacion
+// Listar delegaciones
 export const listarDelegaciones = async (req, res) => {
     try {
         // Aquí iría la lógica para crear un usuario utilizando Prisma
@@ -64,5 +64,5 @@ export const listarDelegaciones = async (req, res) => {
         console.error('Error, listar delegaciones:', error);
         res.status(500).send('Error, listar delegaciones');
     }
-    };
+};
   
