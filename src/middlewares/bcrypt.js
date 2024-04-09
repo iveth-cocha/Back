@@ -24,7 +24,7 @@ export const matchPassword = async (password, hashedPassword) => {
     return response;
 }
 
-export const generarToken = () => {
+export const crearToken  = () => {
     const tokenGenerated = Math.random().toString(36).slice(2);
     return tokenGenerated;
 }

@@ -20,7 +20,7 @@ export const sendMailToUser = async (email, token, passwordRandom) => {
         let mailOptions = {
             from: process.env.USER_MAILTRAP,
             to: email,
-            subject: "Verifica tu cuenta y tu contraseña temporal",
+            subject: "Verificación de Correo y Contraseña",
             html: `<p>Hola, haz clic <a href="${confirmationLink}">aquí</a> para confirmar tu cuenta. <br> 
             Tu contraseña temporal es: ${passwordRandom}. Úsala para acceder a tu cuenta. No olvides cambiarla después.</p>`
         };
@@ -37,4 +37,29 @@ export const sendMailToUser = async (email, token, passwordRandom) => {
     }
 };
 
-export default sendMailToUser;
+export const sendMailToRecoveryPassword = async (email, token) => {
+    try {
+        // Construir el enlace de recuperación de contraseña con el token
+        const recoveryLink = `${process.env.URL_BACKEND}verificar-password/${token}`;
+
+        let mailOptions = {
+            from: process.env.USER_MAILTRAP,
+            to: email,
+            subject: "Correo para reestablecer tu contraseña",
+            html: `
+                <h1>Sistema de delegaciones (Ciberpol )</h1>
+                <hr>
+                <a href="${recoveryLink}">Haz clic aquí para reestablecer tu contraseña</a>
+                <hr>
+                <footer>Ciberpol S.A!</footer>
+            `
+        };
+
+        // Enviar el correo electrónico utilizando async/await
+        let info = await transporter.sendMail(mailOptions);
+        console.log('Correo electrónico enviado:', info.response);
+    } catch (error) {
+        console.error('Error al enviar el correo electrónico:', error);
+    }
+};
+
