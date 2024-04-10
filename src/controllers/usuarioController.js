@@ -1,5 +1,5 @@
-import { Password, encrypPassword,matchPassword, crearToken } from '../middlewares/bcrypt.js';
-import {sendMailToUser, sendMailToRecoveryPassword }  from '../config/nodemailer.js'; 
+import { encrypPassword,matchPassword, crearToken } from '../middlewares/bcrypt.js';
+import {sendMailToUser, sendMailToResetPassword, sendMailToAdmin}  from '../config/nodemailer.js'; 
 import {generarJWT} from "../helpers/crearJWT.js"
 
 
@@ -62,86 +62,106 @@ export const login = async (req, res) => {
   }
 };
 
+// Solicitud para el registro un nuevo usuario
+export const solicitudRegistro = async (req, res) => {
+  const { nombre, email, mensaje } = req.body;
+
+  try {
+    // Verifica si todos los campos están llenos
+    if (!nombre || !email || !mensaje) {
+      return res.status(400).json({ msg: "Debes llenar todos los campos" });
+    }
+
+    // Guarda la solicitud en la base de datos o realiza alguna acción necesaria
+    // por ejemplo, enviar un correo electrónico al administrador para que revise la solicitud
+
+    // Envía un correo electrónico al administrador para notificar la solicitud de registro
+    await sendMailToAdmin(email, nombre, mensaje);
+
+    // Envía una respuesta de éxito al cliente
+    res.status(200).json({ msg: "Tu solicitud de registro ha sido enviada correctamente. Espera la confirmación del administrador." });
+  } catch (error) {
+    console.error("Error al procesar la solicitud de registro:", error);
+    res.status(500).json({ msg: "Ocurrió un error al procesar la solicitud de registro" });
+  }
+};
+
 // Registro un nuevo usuario
 export const registro = async (req, res) => {
   const { agenteID, nombre, email, rol } = req.body;
 
-  // Verificar si todos los campos están llenos
-  if (!nombre || !email || !rol || !agenteID) {
+  try {
+    // Verificar si todos los campos están llenos
+    if (!nombre || !email || !rol || !agenteID) {
       return res.status(400).json({ msg: "Lo sentimos, debes llenar todos los campos" });
-  }
-  
-  try {
-      // Verificar si el email ya está registrado
-      const verificarEmailBDD = await prisma.usuario.findUnique({
-          where: {
-              email: email,
-          },
-      });
-      if (verificarEmailBDD) {
-          return res.status(400).json({ msg: "Lo sentimos, el email ya se encuentra registrado" });
-      }
-
-      // Verificar si el rol seleccionado es válido
-      const rolesValidos = ['ADMINISTRADOR', 'VISUALIZADOR', 'REGISTRADOR'];
-      if (!rolesValidos.includes(rol)) {
-          return res.status(400).json({ msg: "Rol inválido" });
-      }
-      
-      // Verifica si la cedula está registrada en la base de datos y pertenece a algún agente
-      const agenteExistente = await prisma.agente.findUnique({
-          where: {
-              Cedula: parseInt(agenteID)
-          }
-      });
-
-      if (!agenteExistente) {
-          return res.status(400).json({ msg: "El agente con la cédula proporcionada no existe" });
-      }
-      // Generar una contraseña aleatoria
-      const passwordRandom = Password(); // Aquí generas la contraseña aleatoria
-
-      // Cifrar la contraseña
-      const passwordEncrypted = await encrypPassword(passwordRandom);
-      // Crea el token para el nuevo usuario
-      const token = crearToken();
-
-      // Crear un nuevo usuario en la base de datos
-      const nuevoUsuario = await prisma.usuario.create({
-          data: {
-              nombre: nombre,
-              email: email,
-              password: passwordEncrypted,
-              Rol: rol,
-              agente: {
-                  connect: { Cedula: agenteID }
-              },
-              token: token
-          },
-      });
-      // Enviar correo electrónico de confirmación
-      await sendMailToUser(email, token, passwordRandom, nuevoUsuario);
-      
-      res.status(200).json({ msg: "Revisa tu correo electrónico para confirmar tu cuenta" });
-    } catch (error) {
-      console.error("Error al crear el nuevo usuario:", error);
-      res.status(500).json({ msg: "Ocurrió un error al crear el nuevo usuario" });
     }
-};
-// Perfil de un nuevo usuario
-export const perfil = async (req, res) => {
-  try {
-    // Eliminar campos no deseados del usuario
-    delete req.usuarioBDD.token;
-    delete req.usuarioBDD.confirmEmail;
-    delete req.usuarioBDD.createdAt;
-    delete req.usuarioBDD.updatedAt;
-    delete req.usuarioBDD.__v;
 
-    res.status(200).json(req.usuarioBDD);
+    // Verificar si el email ya está registrado
+    const verificarEmailBDD = await prisma.usuario.findUnique({
+      where: {
+        email: email,
+      },
+    });
+    if (verificarEmailBDD) {
+      return res.status(400).json({ msg: "Lo sentimos, el email ya se encuentra registrado" });
+    }
+
+    // Verificar si el rol seleccionado es válido
+    const rolesValidos = ['ADMINISTRADOR', 'VISUALIZADOR', 'REGISTRADOR'];
+    if (!rolesValidos.includes(rol)) {
+      return res.status(400).json({ msg: "Rol inválido" });
+    }
+
+    // Verificar si la cedula está registrada en la base de datos y pertenece a algún agente
+    const agenteExistente = await prisma.agente.findUnique({
+      where: {
+        Cedula: parseInt(agenteID)
+      }
+    });
+    if (!agenteExistente) {
+      return res.status(400).json({ msg: "El agente con la cédula proporcionada no existe" });
+    }
+
+    // Verificar si el agente ya tiene un usuario registrado
+    const usuarioExistente = await prisma.usuario.findFirst({
+      where: {
+        agenteID: agenteExistente.Cedula
+      }
+    });
+    if (usuarioExistente) {
+      return res.status(400).json({ msg: "El agente ya tiene un usuario registrado" });
+    }
+
+    // Generar la contraseña con el ID del agente seguido de "_Cib3rp0l**"
+    const password = `${agenteExistente.Cedula}_Cib3rp0l**`;
+
+    // Encriptar el password
+    const passwordEncrypted = await encrypPassword(password);
+
+    // Crea el token para el nuevo usuario
+    const token = crearToken();
+
+    // Crear un nuevo usuario en la base de datos
+    const nuevoUsuario = await prisma.usuario.create({
+      data: {
+        nombre: nombre,
+        email: email,
+        password: passwordEncrypted,
+        Rol: rol,
+        agente: {
+          connect: { Cedula: agenteID }
+        },
+        token: token
+      },
+    });
+
+    // Enviar correo electrónico de confirmación
+    await sendMailToUser(email, token);
+
+    res.status(200).json({ msg: "Revisa tu correo electrónico para confirmar tu cuenta" });
   } catch (error) {
-    console.error('Error al obtener el perfil del usuario:', error);
-    res.status(500).json({ msg: 'Ocurrió un error al obtener el perfil del usuario' });
+    console.error("Error al crear el nuevo usuario:", error);
+    res.status(500).json({ msg: "Ocurrió un error al crear el nuevo usuario" });
   }
 };
 
@@ -181,25 +201,63 @@ export const detalleUsuario = async (req, res) => {
 
 // Actualizar un usuario
 export const actualizarUsuario = async (req, res) => {
+  const { id } = req.params;
+  const { nombre, email } = req.body;
+
   try {
-    // Aquí iría la lógica para crear un usuario utilizando Prisma
-    // Envía una respuesta indicando que se está creando un usuario
-    res.status(200).send('Actualizar un usuario...');
+      // Verificar si el ID es válido
+      const usuario = await prisma.usuario.findUnique({
+          where: {
+              id: parseInt(id),
+          },
+      });
+
+      if (!usuario) {
+          return res.status(404).json({ msg: `Lo sentimos, no se encontró el usuario con ID ${id}` });
+      }
+
+      // Verificar si el nuevo email ya está registrado
+      if (email && email !== usuario.email) {
+          const usuarioExistente = await prisma.usuario.findUnique({
+              where: {
+                  email,
+              },
+          });
+
+          if (usuarioExistente) {
+              return res.status(400).json({ msg: `Lo sentimos, el correo electrónico ya está registrado` });
+          }
+      }
+
+      // Actualizar el perfil del usuario
+      await prisma.usuario.update({
+          where: {
+              id: parseInt(id),
+          },
+          data: {
+              nombre: nombre || usuario.nombre,
+              email: email || usuario.email,
+          },
+      });
+
+      res.status(200).json({ msg: "Perfil actualizado correctamente" });
   } catch (error) {
-    // Si hay algún error, envía una respuesta de error
-    console.error('Error, actualizar un usuario:', error);
-    res.status(500).send('Error, actualizar un usuario');
+      console.error('Error al actualizar el perfil:', error);
+      res.status(500).json({ msg: 'Ocurrió un error al actualizar el perfil' });
   }
 };
 
 // Eliminar un usuario
 export const eliminarUsuario = async (req, res) => {
   try {
-    // Aquí iría la lógica para crear un usuario utilizando Prisma
-    // Envía una respuesta indicando que se está creando un usuario
-    res.status(200).send('Eliminar un usuario...');
+    const { id } = req.params;
+    const usuarioEliminado = await prisma.usuario.delete({
+      where: {
+        id: Number(id),
+      },
+    });
+    res.status(200).json({ msg: 'Usuario eliminado correctamente'});
   } catch (error) {
-    // Si hay algún error, envía una respuesta de error
     console.error('Error, eliminar un usuario:', error);
     res.status(500).send('Error, eliminar un usuario');
   }
@@ -208,11 +266,9 @@ export const eliminarUsuario = async (req, res) => {
 // Lista de usuarios
 export const listarUsuarios = async (req, res) => {
   try {
-    // Aquí iría la lógica para crear un usuario utilizando Prisma
-    // Envía una respuesta indicando que se está creando un usuario
-    res.status(200).send('Lista de usuarios...');
+    const usuarios = await prisma.usuario.findMany();
+    res.status(200).json(usuarios);
   } catch (error) {
-    // Si hay algún error, envía una respuesta de error
     console.error('Error, lista de usuarios:', error);
     res.status(500).send('Error, lista de usuarios');
   }
@@ -256,7 +312,7 @@ export const confirmEmail = async (req, res) => {
   }
 };
 
-//Recuperar password de un usuario
+// Recuperar password de un usuario
 export const recuperarPassword = async (req, res) => {
   const { email } = req.body;
 
@@ -290,7 +346,7 @@ export const recuperarPassword = async (req, res) => {
     });
 
     // Enviar correo electrónico para recuperar la contraseña
-    await sendMailToRecoveryPassword(email, token);
+    await sendMailToResetPassword(email, token);
 
     res.status(200).json({ msg: "Revisa tu correo electrónico para reestablecer tu contraseña" });
   } catch (error) {
@@ -299,90 +355,67 @@ export const recuperarPassword = async (req, res) => {
   }
 };
 
-//Comprobar password de un usuario
+// Comprobar token de password de un usuario
 export const comprobarTokenPasword = async (req, res) => {
   try {
-      if (!req.params.token) {
-          return res.status(404).json({ msg: "Lo sentimos, no se puede validar la cuenta" });
-      }
+    const { token } = req.params;
 
-      let usuarioBDD;
+    // Buscar al usuario por el token en la base de datos
+    const usuarioBDD = await prisma.usuario.findFirst({
+      where: {
+        token: token,
+      },
+    });
 
-      // Intentar buscar al usuario por su ID
-      if (req.params.id) {
-          usuarioBDD = await prisma.usuario.findUnique({
-              where: {
-                  id: parseInt(req.params.id)
-              }
-          });
-      }
+    // Verificar si el usuario existe y el token es válido
+    if (!usuarioBDD) {
+      return res.status(404).json({ msg: "Lo sentimos, no se puede validar la cuenta" });
+    }
 
-      // Si no se encuentra por ID, buscar por el token
-      if (!usuarioBDD) {
-          usuarioBDD = await prisma.usuario.findFirst({
-              where: {
-                  token: req.params.token
-              }
-          });
-      }
-
-      // Verificar si el usuario no existe o si su token es diferente
-      if (!usuarioBDD || usuarioBDD.token !== req.params.token) {
-          return res.status(404).json({ msg: "Lo sentimos, no se puede validar la cuenta" });
-      }
-
-      res.status(200).json({ msg: "Token confirmado, ya puedes crear tu nueva contraseña" });
+    res.status(200).json({ msg: "Token confirmado, ya puedes crear tu nueva contraseña" });
   } catch (error) {
-      console.error("Error al confirmar el token de la contraseña:", error);
-      res.status(500).json({ msg: "Ocurrió un error al confirmar el token de la contraseña" });
+    console.error("Error al confirmar el token de la contraseña:", error);
+    res.status(500).json({ msg: "Ocurrió un error al confirmar el token de la contraseña" });
   }
 };
-
 
 // Nuevo password de un usuario
 export const nuevoPassword = async (req, res) => {
   const { password, confirmpassword } = req.body;
+  const { token } = req.params;
 
   try {
+    // Verificar si se proporcionan todas las contraseñas
     if (!password || !confirmpassword) {
-      return res.status(404).json({ msg: "Lo sentimos, debes llenar todos los campos" });
+      return res.status(400).json({ msg: "Lo sentimos, debes llenar todos los campos" });
     }
 
+    // Verificar si las contraseñas coinciden
     if (password !== confirmpassword) {
-      return res.status(404).json({ msg: "Lo sentimos, las contraseñas no coinciden" });
+      return res.status(400).json({ msg: "Lo sentimos, las contraseñas no coinciden" });
     }
 
-    let usuarioBDD;
+    // Buscar al usuario por el token en la base de datos
+    const usuarioBDD = await prisma.usuario.findFirst({
+      where: {
+        token: token,
+      },
+    });
 
-    // Buscar al usuario por su id en la base de datos
-    if (req.params.id) {
-      usuarioBDD = await prisma.usuario.findUnique({
-        where: {
-          id: parseInt(req.params.id)
-        }
-      });
+    // Verificar si el usuario existe y el token es válido
+    if (!usuarioBDD) {
+      return res.status(404).json({ msg: "Lo sentimos, no se puede validar la cuenta" });
     }
 
-    // Aplicar el bloque try-catch solo en este punto para manejar el error al validar la cuenta
-    try {
-      if (!usuarioBDD) {
-        throw new Error("Lo sentimos, no se puede validar la cuenta");
-      }
-    } catch (error) {
-      console.error("Error al validar la cuenta:", error);
-      return res.status(404).json({ msg: error.message });
-    }
-
-    // Limpiar el token y actualizar la contraseña del usuario en la base de datos
+    // Actualizar la contraseña del usuario en la base de datos
     await prisma.usuario.update({
       where: {
-        id: usuarioBDD.id
+        id: usuarioBDD.id,
       },
       data: {
-        // Mantener el token existente a menos que sea diferente
-        token: usuarioBDD.token === req.params.token ? null : req.params.token,
-        password: await encrypPassword(password) // Cifrar la nueva contraseña
-      }
+        password: await encrypPassword(password), // Cifrar la nueva contraseña
+        token: null, // Limpiar el token
+      },
     });
 
     res.status(200).json({ msg: "¡Felicitaciones! Ahora puedes iniciar sesión con tu nueva contraseña" });
@@ -392,16 +425,4 @@ export const nuevoPassword = async (req, res) => {
   }
 };
 
-//Actualizar password de un usuario
-export const actualizarPassword = async (req, res) => {
-  try {
-    // Aquí iría la lógica para crear un usuario utilizando Prisma
-    // Envía una respuesta indicando que se está creando un usuario
-    res.status(200).send('Actualizar password de un usuario...');
-  } catch (error) {
-    // Si hay algún error, envía una respuesta de error
-    console.error('Error, actualizar password de un usuario:', error);
-    res.status(500).send('Error, actualizar password de un usuario');
-  }
-};
 

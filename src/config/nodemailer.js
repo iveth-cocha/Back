@@ -12,9 +12,9 @@ let transporter = nodemailer.createTransport({
     },
 });
 
-export const sendMailToUser = async (email, token, passwordRandom) => {
+export const sendMailToUser = async (email, token) => {
     try {
-        // Construir el enlace de confirmación con el token y la contraseña aleatoria
+        // Construir el enlace de confirmación con el token
         const confirmationLink = `${process.env.URL_BACKEND}confirmar/${encodeURIComponent(token)}`;
 
         let mailOptions = {
@@ -22,7 +22,8 @@ export const sendMailToUser = async (email, token, passwordRandom) => {
             to: email,
             subject: "Verificación de Correo y Contraseña",
             html: `<p>Hola, haz clic <a href="${confirmationLink}">aquí</a> para confirmar tu cuenta. <br> 
-            Tu contraseña temporal es: ${passwordRandom}. Úsala para acceder a tu cuenta. No olvides cambiarla después.</p>`
+            Recuerde que su contraseña es:"Cédula_Cib3rp0l**" . Por ejemplo: "1717171717_Cib3rp0l**".<br> 
+            Úsela para acceder a su cuenta.</p>`
         };
 
         transporter.sendMail(mailOptions, function(error, info){
@@ -37,19 +38,19 @@ export const sendMailToUser = async (email, token, passwordRandom) => {
     }
 };
 
-export const sendMailToRecoveryPassword = async (email, token) => {
+export const sendMailToResetPassword = async (email, token) => {
     try {
-        // Construir el enlace de recuperación de contraseña con el token
-        const recoveryLink = `${process.env.URL_BACKEND}verificar-password/${token}`;
+        // Construir el enlace de reestablecimiento de contraseña con el token
+        const resetPasswordLink = `${process.env.URL_BACKEND}recuperar-password/${token}`;
 
         let mailOptions = {
             from: process.env.USER_MAILTRAP,
             to: email,
-            subject: "Correo para reestablecer tu contraseña",
+            subject: "Recuperación de Contraseña",
             html: `
-                <h1>Sistema de delegaciones (Ciberpol )</h1>
+                <h1>Recuperación de Contraseña</h1>
                 <hr>
-                <a href="${recoveryLink}">Haz clic aquí para reestablecer tu contraseña</a>
+                <a href="${resetPasswordLink}">Haz clic aquí para reestablecer tu contraseña</a>
                 <hr>
                 <footer>Ciberpol S.A!</footer>
             `
@@ -63,3 +64,19 @@ export const sendMailToRecoveryPassword = async (email, token) => {
     }
 };
 
+export const sendMailToAdmin = async (email, nombreUsuario) => {
+    try {
+        let mailOptions = {
+            from: process.env.USER_MAILTRAP,
+            to: process.env.ADMIN_EMAIL,
+            subject: "Solicitud de Registro",
+            html: `<p>Se solicita registrar un nuevo usuario con el correo electrónico ${email} y el nombre ${nombreUsuario}</p>`
+        };
+
+        // Enviar el correo electrónico al administrador utilizando async/await
+        let info = await transporter.sendMail(mailOptions);
+        console.log('Correo electrónico enviado al administrador:', info.response);
+    } catch (error) {
+        console.error('Error al enviar el correo electrónico al administrador:', error);
+    }
+};
