@@ -7,7 +7,7 @@ export const registrarDelegacion = async (req, res) => {
         const datosDelegacion = req.body; // Suponiendo que recibes todos los datos necesarios para crear una delegación en req.body
   
         const añoActual = new Date().getFullYear(); // Obtenemos el año actual
-        
+
         // Consultamos el último valor de orden para incrementarlo
         const ultimoOrden = await prisma.delegacion.findFirst({
             select: {
@@ -18,48 +18,19 @@ export const registrarDelegacion = async (req, res) => {
                 orden: 'desc'
             }
         });
-  
+        
         // Si hay registros existentes, incrementamos el orden en 1; de lo contrario, comenzamos desde 1
         let ordenInicial = 1;
-        if (ultimoOrden) {
+        if (ultimoOrden && ultimoOrden.anio_ingreso === añoActual) {
             ordenInicial = ultimoOrden.orden + 1;
         }
-
         
-        // Función para verificar si el año de la fecha es diferente al año actual
-        const esAñoDiferente = (anio_ingreso) => {
-            // Verificar si la fecha es nula antes de intentar acceder a sus propiedades
-            if (anio_ingreso === null) {
-                return true; // Si la fecha es nula, asumimos que es diferente
-            }
-            return anio_ingreso.getFullYear() !== añoActual;
-        };
+        const nuevoOrden = Math.max(ultimoOrden ? ultimoOrden.orden + 1 : 1, ordenInicial);
 
-        // Incrementar el orden hasta que el año sea diferente
-        while (!ultimoOrden || !esAñoDiferente(ultimoOrden.anio_ingreso)) {
-            console.log(`Orden actual: ${ordenInicial}`);
-            ordenInicial++;
-
-            // Consultar el último registro nuevamente en cada iteración para verificar la fecha
-            const ultimoOrdenActualizado = await prisma.delegacion.findFirst({
-                select: {
-                    orden: true,
-                    anio_ingreso: true
-                },
-                orderBy: {
-                    anio_ingreso: 'desc'
-                }
-            });
-            
-            if (ultimoOrdenActualizado) {
-                ultimoOrden = ultimoOrdenActualizado;
-            }
-        }
-  
         const nuevaDelegacion = await prisma.delegacion.create({
             data: {
                 anio_ingreso: añoActual,
-                orden: ordenInicial,
+                orden: nuevoOrden,
                 mes_ingreso: datosDelegacion.mes_ingreso,
                 numero_investigacion_previa: datosDelegacion.numero_investigacion_previa,
                 numero_instruccion_fiscal: datosDelegacion.numero_instruccion_fiscal,
