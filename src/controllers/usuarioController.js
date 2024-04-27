@@ -419,5 +419,14 @@ export const nuevoPassword = async (req, res) => {
     res.status(500).json({ msg: "Ocurrió un error al establecer el nuevo password" });
   }
 };
-
+// Lista de usuarios
+export const listarAgentes = async (req, res) => {
+  try {
+    const agente = await prisma.agente.findMany();
+    res.status(200).json(agente);
+  } catch (error) {
+    console.error('Error, lista de usuarios:', error);
+    res.status(500).send('Error, lista de usuarios');
+  }
+};
 

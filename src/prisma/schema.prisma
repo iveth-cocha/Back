@@ -56,13 +56,13 @@ model Delegacion {
   mes_ingreso                                String?
   numero_investigacion_previa                String?    @db.VarChar(255)
   numero_instruccion_fiscal                  String?    @db.VarChar(255)
-  grado_agente                               String     @db.VarChar(255)
-  apellidos_nombres_agente                   String     @db.VarChar(255)
   zona                                       String?    @db.VarChar(255)
   provincia                                  String?    @db.VarChar(255)
   canton                                     String?    @db.VarChar(255)
   cod_distrito                               String?    @db.VarChar(255)
   distrito                                   String?    @db.VarChar(255)
+  grado_agente                               String     @db.VarChar(255)
+  apellidos_nombres_agente                   String     @db.VarChar(255)
   tipo_delito                                String?    @db.VarChar(255)
   delito_tipificado_delegacion               String?    @db.VarChar(255)
   delito_desagregacion_policia_judicial      String?    @db.VarChar(255)
@@ -109,6 +109,7 @@ model Delegacion {
   traslados                                  Int?
   informe_descargo                           String?    @db.VarChar(255)
   causas_incumplimiento_investigacion        String?    @db.VarChar(255)
+  nombre_detenidos_producto_investigacion    String?    @db.VarChar(255)
   observaciones                              String?    @db.VarChar(255)
   cantidad_sustraida                         String?    @db.VarChar(255)
   entidad_financiera                         String?    @db.VarChar(255)

@@ -11,7 +11,8 @@ export const registrarDelegacion = async (req, res) => {
         // Consultamos el último valor de orden para incrementarlo
         const ultimoOrden = await prisma.delegacion.findFirst({
             select: {
-                orden: true
+                orden: true,
+                anio_ingreso: true
             },
             orderBy: {
                 orden: 'desc'
@@ -23,11 +24,42 @@ export const registrarDelegacion = async (req, res) => {
         if (ultimoOrden) {
             ordenInicial = ultimoOrden.orden + 1;
         }
+
+        
+        // Función para verificar si el año de la fecha es diferente al año actual
+        const esAñoDiferente = (anio_ingreso) => {
+            // Verificar si la fecha es nula antes de intentar acceder a sus propiedades
+            if (anio_ingreso === null) {
+                return true; // Si la fecha es nula, asumimos que es diferente
+            }
+            return anio_ingreso.getFullYear() !== añoActual;
+        };
+
+        // Incrementar el orden hasta que el año sea diferente
+        while (!ultimoOrden || !esAñoDiferente(ultimoOrden.anio_ingreso)) {
+            console.log(`Orden actual: ${ordenInicial}`);
+            ordenInicial++;
+
+            // Consultar el último registro nuevamente en cada iteración para verificar la fecha
+            const ultimoOrdenActualizado = await prisma.delegacion.findFirst({
+                select: {
+                    orden: true,
+                    anio_ingreso: true
+                },
+                orderBy: {
+                    anio_ingreso: 'desc'
+                }
+            });
+            
+            if (ultimoOrdenActualizado) {
+                ultimoOrden = ultimoOrdenActualizado;
+            }
+        }
   
         const nuevaDelegacion = await prisma.delegacion.create({
             data: {
-                anio_ingreso: datosDelegacion.anio_ingreso,
-                orden: datosDelegacion.orden,
+                anio_ingreso: añoActual,
+                orden: ordenInicial,
                 mes_ingreso: datosDelegacion.mes_ingreso,
                 numero_investigacion_previa: datosDelegacion.numero_investigacion_previa,
                 numero_instruccion_fiscal: datosDelegacion.numero_instruccion_fiscal,
@@ -84,6 +116,7 @@ export const registrarDelegacion = async (req, res) => {
                 traslados: datosDelegacion.traslados,
                 informe_descargo: datosDelegacion.informe_descargo,
                 causas_incumplimiento_investigacion: datosDelegacion.causas_incumplimiento_investigacion,
+                nombre_detenidos_producto_investigacion: datosDelegacion.nombre_detenidos_producto_investigacion,
                 observaciones: datosDelegacion.observaciones,
                 cantidad_sustraida: datosDelegacion.cantidad_sustraida,
                 entidad_financiera: datosDelegacion.entidad_financiera,
