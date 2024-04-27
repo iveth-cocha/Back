@@ -64,13 +64,43 @@ export const sendMailToResetPassword = async (email, token) => {
     }
 };
 
-export const sendMailToAdmin = async (email, nombreUsuario) => {
+export const sendMailToAdmin = async (cedula, email, nombreUsuario, mensaje) => {
     try {
         let mailOptions = {
             from: process.env.USER_MAILTRAP,
             to: process.env.ADMIN_EMAIL,
             subject: "Solicitud de Registro",
-            html: `<p>Se solicita registrar un nuevo usuario con el correo electrónico ${email} y el nombre ${nombreUsuario}</p>`
+            html: `<!DOCTYPE html>
+            <html lang="es">
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Solicitud de Registro</title>
+              <style>
+                /* Estilos CSS aquí */
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="header">
+                  <h2>Solicitud de Registro</h2>
+                </div>
+                <div class="content">
+                  <div class="info">
+                    <p>Se ha solicitado registrar un nuevo usuario con los siguientes detalles:</p>
+                    <p><strong>Cédula:</strong> ${cedula}</p>
+                    <p><strong>Correo Electrónico:</strong> ${email}</p>
+                    <p><strong>Nombre de Usuario:</strong> ${nombreUsuario}</p>
+                    <p><strong>Mensaje:</strong> ${mensaje}</p>
+                  </div>
+                </div>
+                <div class="footer">
+                  <p>Este correo electrónico fue generado automáticamente. Por favor, no responda a este mensaje.</p>
+                </div>
+              </div>
+            </body>
+            </html>
+        `
         };
 
         // Enviar el correo electrónico al administrador utilizando async/await

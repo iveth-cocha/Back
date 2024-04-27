@@ -14,7 +14,6 @@ model Agente {
   Apellido_Nombre  String   @db.VarChar(255) 
   mapeos           Mapeo[]       // Relación uno a muchos con mapeo
   usuarios         Usuario[]      // Relación uno a muchos con usuarios
-  delegaciones     Delegacion[]   // Relación uno a muchos con delegaciones
 }
 
 //Modelo Usuario
@@ -52,8 +51,8 @@ model Mapeo {
 //Modelo Delegacion
 model Delegacion {
   id                                         Int        @id @default(autoincrement())
-  anio_ingreso                               Int
-  orden                                      Int
+  anio_ingreso                               Int?
+  orden                                      Int?
   mes_ingreso                                String?
   numero_investigacion_previa                String?    @db.VarChar(255)
   numero_instruccion_fiscal                  String?    @db.VarChar(255)
@@ -113,8 +112,6 @@ model Delegacion {
   observaciones                              String?    @db.VarChar(255)
   cantidad_sustraida                         String?    @db.VarChar(255)
   entidad_financiera                         String?    @db.VarChar(255)
-  agente                                     Agente     @relation(fields: [agenteID], references: [Cedula])
-  agenteID                                   Int
 }
 
 //Modelo Delito
