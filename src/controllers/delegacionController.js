@@ -239,7 +239,6 @@ export const eliminarDelegacion = async (req, res) => {
     }
 };
 
-
 // Listar delegaciones
 export const listarDelegaciones = async (req, res) => {
     try {

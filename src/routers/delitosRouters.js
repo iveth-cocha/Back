@@ -7,13 +7,13 @@ const router = Router();
 router.post('/registro/delito', registrarDelito);
 
 // Ruta para ver el detalle de un usuario
-router.get('/detalle/delito/:id', detalleDelito );
+router.get('/detalle/delito', detalleDelito );
 
 // Ruta para actualizar un usuario
-router.put('/actualizar/delito/:id', actualizarDelito );
+router.put('/actualizar/delito', actualizarDelito );
 
 // Ruta para eliminar un usuario
-router.delete('/eliminar/delito/:id',eliminarDelito);
+router.delete('/eliminar/delito',eliminarDelito);
 
 // Ruta para listar los usuarios
 router.get('/delitos', listarDelitos);

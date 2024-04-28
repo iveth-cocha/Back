@@ -117,7 +117,7 @@ model Delegacion {
 
 //Modelo Delito
 model Delito {
-    id       Int      @id @default(autoincrement())
+  id       Int      @id @default(autoincrement())
   delito     String   @db.VarChar(255)
   seccion    String?  @db.VarChar(255)
 }
