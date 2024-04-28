@@ -7,13 +7,13 @@ const router = Router();
 router.post('/registro/delegacion', registrarDelegacion);
 
 // Ruta para ver el detalle de un usuario _
-router.get('/detalle/delegacion/:id', detalleDelegacion );
+router.get('/detalle/delegacion', detalleDelegacion );
 
 // Ruta para actualizar un usuario:
-router.put('/actualizar/delegacion/:id', actualizarDelegacion );
+router.put('/actualizar/delegacion', actualizarDelegacion );
 
 // Ruta para eliminar un usuario:
-router.delete('/eliminar/delegacion/:id',eliminarDelegacion);
+router.delete('/eliminar/delegacion',eliminarDelegacion);
 
 // Ruta para listar los usuarios:
 router.get('/delegaciones', listarDelegaciones);
