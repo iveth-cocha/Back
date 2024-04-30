@@ -125,15 +125,11 @@ model Delito {
 //Modelo Localidad
 model Localidad {
   id               Int      @id @default(autoincrement())
-  cod_subcircuito  String?  @db.VarChar(255)
   zona             String?  @db.VarChar(255)
   subzona          String?  @db.VarChar(255)
   canton           String?  @db.VarChar(255)
   cod_distrito     String?  @db.VarChar(255)
   distrito         String?  @db.VarChar(255)
-  circuito         String?  @db.VarChar(255)
-  sub_circuito     String?  @db.VarChar(255)
-  cod_circuito     String?  @db.VarChar(255)
 }
 
 model Ficalia{
