@@ -121,4 +121,15 @@ export const listarDelitos = async (req, res) => {
         res.status(500).send('Error, listar delitos');
     }
 };
-  
+
+// Listar un delito
+export const listarLocalizaciones = async (req, res) => {
+  try {
+    const localizacion = await prisma.localidad.findMany();
+    res.status(200).json(localizacion);
+  } catch (error) {
+      // Si hay algún error, envía una respuesta de error
+      console.error('Error, listar localizaciones:', error);
+      res.status(500).send('Error, listar localizaciones');
+  }
+};

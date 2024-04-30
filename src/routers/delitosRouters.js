@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { registrarDelito,detalleDelito, actualizarDelito, eliminarDelito, listarDelitos} from '../controllers/delitosController.js';
+import { registrarDelito,detalleDelito, actualizarDelito, eliminarDelito, listarDelitos, listarLocalizaciones} from '../controllers/delitosController.js';
 
 const router = Router();
 
@@ -18,6 +18,8 @@ router.delete('/eliminar/delito',eliminarDelito);
 // Ruta para listar los usuarios
 router.get('/delitos', listarDelitos);
 
+// Ruta para listar las localizaciones
+router.get('/localizaciones', listarLocalizaciones);
 
 
 export default router;
