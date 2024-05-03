@@ -16,16 +16,16 @@ router.post('/solicitar-registro', solicitudRegistro);
 router.post('/registro', registro);
 
 // Ruta para ver el detalle de un usuario
-router.get('/detalle/usuario/:id',verificarAdmin,detalleUsuario );
+router.get('/detalle/usuario/:id',detalleUsuario );
 
 // Ruta para actualizar un usuario
-router.put('/actualizar/usuario/:id', verificarAdmin, actualizarUsuario );
+router.put('/actualizar/usuario/:id', actualizarUsuario );
 
 // Ruta para eliminar un usuario
-router.delete('/eliminar/usuario/:id',verificarAdmin,eliminarUsuario);
+router.delete('/eliminar/usuario/:id',eliminarUsuario);
 
 // Ruta para listar los usuarios
-router.get('/usuarios', verificarAdmin, listarUsuarios);
+router.get('/usuarios', listarUsuarios);
 
 // Ruta para confirmar email de un usuario
 router.get('/confirmar/:token', confirmEmail);

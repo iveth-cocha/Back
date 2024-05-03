@@ -68,7 +68,6 @@ export const login = async (req, res) => {
   }
 };
 
-
 // Solicitud para el registro un nuevo usuario
 export const solicitudRegistro = async (req, res) => {
   const { cedula, nombre, email, mensaje } = req.body;
