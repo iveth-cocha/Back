@@ -110,7 +110,7 @@ export const registro = async (req, res) => {
     // Verificar si la cedula está registrada en la base de datos y pertenece a algún agente
     const agenteExistente = await prisma.agente.findUnique({
       where: {
-        Cedula: parseInt(agenteID)
+        Cedula: agenteID.toString()
       }
     });
     if (!agenteExistente) {

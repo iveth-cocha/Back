@@ -13,7 +13,7 @@ export const verificarAdmin = async (req, res, next) => {
     try {
         const { id, Rol } = jwt.verify(authorization.split(' ')[1], process.env.JWT_SECRET);
 
-        if (Rol === "ADMINISTRADOR") {
+        if (Rol === "Administrador") {
             const usuarioBDD = await prisma.usuario.findUnique({
                 where: {
                     id: parseInt(id)
