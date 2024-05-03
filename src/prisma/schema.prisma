@@ -8,10 +8,36 @@ datasource db {
 }
 
 //Modelo Agente
+//Modelo Agente
 model Agente {
   Cedula           Int      @unique @id 
-  Grado            String   @db.VarChar(255)
-  Apellido_Nombre  String   @db.VarChar(255) 
+  Direcion_Unidad  String?   @db.VarChar(255)
+  Grado            String?   @db.VarChar(255)
+  Apellido_Nombre  String?   @db.VarChar(255) 
+  Zona String?   @db.VarChar(255) 
+  SubZona String?   @db.VarChar(255) 
+  Distrito_Canton String?   @db.VarChar(255) 
+  PaseDNTH String?   @db.VarChar(255) 
+  Funcion String?   @db.VarChar(255) 
+  Novedad String?   @db.VarChar(255) 
+  Detalle String?   @db.VarChar(255) 
+  Documento String?   @db.VarChar(255) 
+  Titulo String?   @db.VarChar(255) 
+  IdiomaExtranjero String?   @db.VarChar(255) 
+  Licencia String?   @db.VarChar(255) 
+  Residencia String?   @db.VarChar(255) 
+  Estado_Civil String?   @db.VarChar(255) 
+  FechaNacimiento DateTime?
+  Genero String?   @db.VarChar(255) 
+  Telefono Int
+  Email String?   @db.VarChar(255) 
+  NombresFamiliar String?   @db.VarChar(255) 
+  Parentesco String?   @db.VarChar(255) 
+  TelefonoFamiliar Int
+  Terno Int
+  Camisa Int
+  Calzado Int
+  Cabeza Int
   mapeos           Mapeo[]       // Relación uno a muchos con mapeo
   usuarios         Usuario[]      // Relación uno a muchos con usuarios
 }
@@ -19,6 +45,7 @@ model Agente {
 //Modelo Usuario
 model Usuario {
   id         Int       @id @default(autoincrement())
+  Grado            String?   @db.VarChar(255)
   nombre     String    @db.VarChar(255)
   email      String    @unique @db.VarChar(255)
   password   String    @db.VarChar(255)
@@ -30,9 +57,9 @@ model Usuario {
 }
 
 enum RolEnum {
-  ADMINISTRADOR
-  VISUALIZADOR
-  REGISTRADOR
+  Administrador
+  Visualizador
+  Regristrador
 }
 
 //Modelo Mapeo
@@ -117,7 +144,7 @@ model Delegacion {
 
 //Modelo Delito
 model Delito {
-  id       Int      @id @default(autoincrement())
+    id       Int      @id @default(autoincrement())
   delito     String   @db.VarChar(255)
   seccion    String?  @db.VarChar(255)
 }
@@ -134,5 +161,6 @@ model Localidad {
 
 model Ficalia{
   id Int @id
-  fiscalia String @db.VarChar(255)
+  provincia String @db.VarChar(255)
+  N_fiscalia String @db.VarChar(255)
 }

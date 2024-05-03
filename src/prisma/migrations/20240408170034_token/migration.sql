@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "Usuario" ALTER COLUMN "token" DROP NOT NULL,
-ALTER COLUMN "token" DROP DEFAULT;
