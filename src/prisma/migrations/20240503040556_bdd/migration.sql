@@ -3,10 +3,10 @@ CREATE TYPE "RolEnum" AS ENUM ('Administrador', 'Visualizador', 'Regristrador');
 
 -- CreateTable
 CREATE TABLE "Agente" (
-    "Cedula" INTEGER NOT NULL,
     "Direcion_Unidad" VARCHAR(255),
     "Grado" VARCHAR(255),
     "Apellido_Nombre" VARCHAR(255),
+    "Cedula" TEXT NOT NULL,
     "Zona" VARCHAR(255),
     "SubZona" VARCHAR(255),
     "Distrito_Canton" VARCHAR(255),
@@ -20,17 +20,17 @@ CREATE TABLE "Agente" (
     "Licencia" VARCHAR(255),
     "Residencia" VARCHAR(255),
     "Estado_Civil" VARCHAR(255),
-    "FechaNacimiento" TIMESTAMP(3),
+    "FechaNacimiento" VARCHAR(255),
     "Genero" VARCHAR(255),
-    "Telefono" INTEGER NOT NULL,
+    "Telefono" VARCHAR(255),
     "Email" VARCHAR(255),
     "NombresFamiliar" VARCHAR(255),
     "Parentesco" VARCHAR(255),
-    "TelefonoFamiliar" INTEGER NOT NULL,
-    "Terno" INTEGER NOT NULL,
-    "Camisa" INTEGER NOT NULL,
-    "Calzado" INTEGER NOT NULL,
-    "Cabeza" INTEGER NOT NULL,
+    "TelefonoFamiliar" VARCHAR(255),
+    "Terno" VARCHAR(255),
+    "Camisa" VARCHAR(255),
+    "Calzado" VARCHAR(255),
+    "Cabeza" VARCHAR(255),
 
     CONSTRAINT "Agente_pkey" PRIMARY KEY ("Cedula")
 );
@@ -43,7 +43,7 @@ CREATE TABLE "Usuario" (
     "email" VARCHAR(255) NOT NULL,
     "password" VARCHAR(255) NOT NULL,
     "Rol" "RolEnum" NOT NULL,
-    "agenteID" INTEGER NOT NULL,
+    "agenteID" TEXT NOT NULL,
     "token" TEXT,
     "confirmEmail" BOOLEAN NOT NULL DEFAULT false,
 
@@ -53,8 +53,8 @@ CREATE TABLE "Usuario" (
 -- CreateTable
 CREATE TABLE "Mapeo" (
     "id" SERIAL NOT NULL,
-    "agenteID" INTEGER NOT NULL,
-    "Cedula" INTEGER NOT NULL,
+    "agenteID" TEXT NOT NULL,
+    "Cedula" TEXT NOT NULL,
     "Apellido_Nombre" VARCHAR(255) NOT NULL,
     "Grado" VARCHAR(255) NOT NULL,
     "Rol" "RolEnum" NOT NULL,

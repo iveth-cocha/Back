@@ -8,12 +8,11 @@ datasource db {
 }
 
 //Modelo Agente
-//Modelo Agente
 model Agente {
-  Cedula           Int      @unique @id 
   Direcion_Unidad  String?   @db.VarChar(255)
   Grado            String?   @db.VarChar(255)
   Apellido_Nombre  String?   @db.VarChar(255) 
+  Cedula           String      @unique @id 
   Zona String?   @db.VarChar(255) 
   SubZona String?   @db.VarChar(255) 
   Distrito_Canton String?   @db.VarChar(255) 
@@ -27,17 +26,17 @@ model Agente {
   Licencia String?   @db.VarChar(255) 
   Residencia String?   @db.VarChar(255) 
   Estado_Civil String?   @db.VarChar(255) 
-  FechaNacimiento DateTime?
+  FechaNacimiento String?  @db.VarChar(255)
   Genero String?   @db.VarChar(255) 
-  Telefono Int
+  Telefono String?   @db.VarChar(255)
   Email String?   @db.VarChar(255) 
   NombresFamiliar String?   @db.VarChar(255) 
   Parentesco String?   @db.VarChar(255) 
-  TelefonoFamiliar Int
-  Terno Int
-  Camisa Int
-  Calzado Int
-  Cabeza Int
+  TelefonoFamiliar String?   @db.VarChar(255)
+  Terno String?   @db.VarChar(255)
+  Camisa String?   @db.VarChar(255)
+  Calzado String?   @db.VarChar(255)
+  Cabeza String?   @db.VarChar(255)
   mapeos           Mapeo[]       // Relación uno a muchos con mapeo
   usuarios         Usuario[]      // Relación uno a muchos con usuarios
 }
@@ -51,7 +50,7 @@ model Usuario {
   password   String    @db.VarChar(255)
   Rol        RolEnum
   agente     Agente    @relation(fields: [agenteID], references: [Cedula])
-  agenteID   Int
+  agenteID   String
   token       String?    // Ahora el campo token puede ser nulo
   confirmEmail Boolean   @default(false)
 }
@@ -66,8 +65,8 @@ enum RolEnum {
 model Mapeo {
   id              Int       @id @default(autoincrement())
   agente          Agente    @relation(fields: [agenteID], references: [Cedula])
-  agenteID        Int
-  cedula          Int       @map(name: "Cedula") // Campo para almacenar la cédula del agente
+  agenteID        String
+  cedula          String       @map(name: "Cedula") // Campo para almacenar la cédula del agente
   nombreAgente    String    @map(name: "Apellido_Nombre") @db.VarChar(255) // Campo para almacenar el nombre del agente
   grado           String    @map(name: "Grado") @db.VarChar(255) // Campo para almacenar el grado del agente
   Rol             RolEnum
