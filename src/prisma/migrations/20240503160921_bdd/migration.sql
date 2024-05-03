@@ -20,17 +20,17 @@ CREATE TABLE "Agente" (
     "Licencia" VARCHAR(255),
     "Residencia" VARCHAR(255),
     "Estado_Civil" VARCHAR(255),
-    "FechaNacimiento" VARCHAR(255),
+    "FechaNacimiento" TIMESTAMP(3) NOT NULL,
     "Genero" VARCHAR(255),
     "Telefono" VARCHAR(255),
     "Email" VARCHAR(255),
     "NombresFamiliar" VARCHAR(255),
     "Parentesco" VARCHAR(255),
     "TelefonoFamiliar" VARCHAR(255),
-    "Terno" VARCHAR(255),
-    "Camisa" VARCHAR(255),
-    "Calzado" VARCHAR(255),
-    "Cabeza" VARCHAR(255),
+    "Terno" INTEGER NOT NULL,
+    "Camisa" INTEGER NOT NULL,
+    "Calzado" INTEGER NOT NULL,
+    "Cabeza" INTEGER NOT NULL,
 
     CONSTRAINT "Agente_pkey" PRIMARY KEY ("Cedula")
 );

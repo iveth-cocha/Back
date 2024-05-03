@@ -26,17 +26,17 @@ model Agente {
   Licencia String?   @db.VarChar(255) 
   Residencia String?   @db.VarChar(255) 
   Estado_Civil String?   @db.VarChar(255) 
-  FechaNacimiento String?  @db.VarChar(255)
+  FechaNacimiento DateTime
   Genero String?   @db.VarChar(255) 
   Telefono String?   @db.VarChar(255)
   Email String?   @db.VarChar(255) 
   NombresFamiliar String?   @db.VarChar(255) 
   Parentesco String?   @db.VarChar(255) 
   TelefonoFamiliar String?   @db.VarChar(255)
-  Terno String?   @db.VarChar(255)
-  Camisa String?   @db.VarChar(255)
-  Calzado String?   @db.VarChar(255)
-  Cabeza String?   @db.VarChar(255)
+  Terno Int
+  Camisa Int
+  Calzado Int
+  Cabeza Int
   mapeos           Mapeo[]       // Relación uno a muchos con mapeo
   usuarios         Usuario[]      // Relación uno a muchos con usuarios
 }
@@ -66,7 +66,7 @@ model Mapeo {
   id              Int       @id @default(autoincrement())
   agente          Agente    @relation(fields: [agenteID], references: [Cedula])
   agenteID        String
-  cedula          String       @map(name: "Cedula") // Campo para almacenar la cédula del agente
+  cedula          String    @map(name: "Cedula") // Campo para almacenar la cédula del agente
   nombreAgente    String    @map(name: "Apellido_Nombre") @db.VarChar(255) // Campo para almacenar el nombre del agente
   grado           String    @map(name: "Grado") @db.VarChar(255) // Campo para almacenar el grado del agente
   Rol             RolEnum

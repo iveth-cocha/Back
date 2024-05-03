@@ -5,6 +5,7 @@ import cors from 'cors';
 import usuarioRouters from '../src/routers/usuarioRouters.js';
 import delegacionRouters from '../src/routers/delegacionRouters.js';
 import delitosRouters from '../src/routers/delitosRouters.js';
+import agentesRouters from '../src/routers/agenteRouters.js'
 
 
 // Inicializaciones
@@ -26,6 +27,7 @@ app.use(express.json())
 app.use('/api', usuarioRouters);
 app.use('/api', delegacionRouters);
 app.use('/api', delitosRouters);
+app.use('/api', agentesRouters);
 
 
 
