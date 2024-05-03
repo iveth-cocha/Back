@@ -51,8 +51,9 @@ model Usuario {
   Rol        RolEnum
   agente     Agente    @relation(fields: [agenteID], references: [Cedula])
   agenteID   String
-  token       String?    // Ahora el campo token puede ser nulo
+  token       String?   
   confirmEmail Boolean   @default(false)
+  actualizarPassword Boolean  @default(false) 
 }
 
 enum RolEnum {

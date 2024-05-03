@@ -1,6 +1,6 @@
 // usuarioRoutes.js
 import { Router } from 'express';
-import { login,solicitudRegistro, registro, detalleUsuario, actualizarUsuario, eliminarUsuario, listarUsuarios, confirmEmail, recuperarPassword, comprobarTokenPasword, nuevoPassword} from '../controllers/usuarioController.js';
+import { login,solicitudRegistro, registro, detalleUsuario, actualizarUsuario, eliminarUsuario, listarUsuarios, confirmEmail, recuperarPassword, comprobarTokenPasword, nuevoPassword, actualizarContraseña} from '../controllers/usuarioController.js';
 import {verificarAdmin, verificarRegistrador, verificarVisualizador} from '../middlewares/autenticacion.js'
 
 //Crear rutas para cada perfil
@@ -39,5 +39,7 @@ router.get('/recuperar-password/:token', comprobarTokenPasword);
 // Ruta para crear un nuevo password de un usuario
 router.post('/nuevo-password/:token', nuevoPassword);
 
+// Ruta par actualizar obligatoriamente el password de un usuario
+router.put('/actualizar-contrasena/:id', actualizarContraseña);
 
 export default router;

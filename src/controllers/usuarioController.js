@@ -41,6 +41,12 @@ export const login = async (req, res) => {
       return res.status(404).json({ msg: "Lo sentimos, la contraseña no es correcta" });
     }
 
+    // Verificar si es necesario actualizar la contraseña
+    if (!usuarioBDD.actualizarPassword) {
+      // Redirigir al usuario a una página para actualizar su contraseña
+      return res.status(200).json({ msg: "Es necesario actualizar su contraseña", redirectTo: '/actualizar-contrasena' });
+    }
+
     const token = generarJWT(usuarioBDD.id, usuarioBDD.Rol)
 
     // Extraer los campos necesarios del usuario para la respuesta
@@ -61,6 +67,7 @@ export const login = async (req, res) => {
     res.status(500).json({ msg: "Error al logear el usuario" });
   }
 };
+
 
 // Solicitud para el registro un nuevo usuario
 export const solicitudRegistro = async (req, res) => {
@@ -146,7 +153,9 @@ export const registro = async (req, res) => {
         agente: {
           connect: { Cedula: agenteID }
         },
-        token: token
+        Grado: agenteExistente.Grado,
+        token: token,
+        actualizarPassword: false,
       },
     });
 
@@ -246,15 +255,26 @@ export const actualizarUsuario = async (req, res) => {
 export const eliminarUsuario = async (req, res) => {
   try {
     const { id } = req.params;
-    const usuarioEliminado = await prisma.usuario.delete({
+    const usuario = await prisma.usuario.findUnique({
       where: {
         id: Number(id),
       },
     });
-    res.status(200).json({ msg: 'Usuario eliminado correctamente'});
+
+    if (!usuario) {
+      return res.status(404).json({ msg: 'Usuario no encontrado' });
+    }
+
+    await prisma.usuario.delete({
+      where: {
+        id: Number(id),
+      },
+    });
+    
+    res.status(200).json({ msg: 'Usuario eliminado correctamente' });
   } catch (error) {
-    console.error('Error, eliminar un usuario:', error);
-    res.status(500).send('Error, eliminar un usuario');
+    console.error('Error al eliminar un usuario:', error);
+    res.status(500).send('Error al eliminar un usuario');
   }
 };
 
@@ -419,4 +439,49 @@ export const nuevoPassword = async (req, res) => {
     res.status(500).json({ msg: "Ocurrió un error al establecer el nuevo password" });
   }
 };
+
+// Método para actualizar la contraseña del usuario
+export const actualizarContraseña = async (req, res) => {
+  const { id } = req.params;
+  const { newPassword, confirmPassword } = req.body;
+
+  try {
+    // Verificar si la nueva contraseña coincide con la confirmación de contraseña
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ msg: "Las contraseñas no coinciden" });
+    }
+
+    // Buscar al usuario por ID en la base de datos
+    const usuario = await prisma.usuario.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    if (!usuario) {
+      return res.status(404).json({ msg: `Lo sentimos, no se encontró el usuario con ID ${id}` });
+    }
+
+    // Encriptar la nueva contraseña
+    const newPasswordEncrypted = await encrypPassword(newPassword);
+
+    // Actualizar la contraseña del usuario en la base de datos
+    await prisma.usuario.update({
+      where: {
+        id: parseInt(id),
+      },
+      data: {
+        password: newPasswordEncrypted,
+        actualizarPassword: true, // Establecer el campo passwordUpdated a true
+      },
+    });
+
+    res.status(200).json({ msg: "Contraseña actualizada correctamente" });
+  } catch (error) {
+    console.error('Error al actualizar la contraseña:', error);
+    res.status(500).json({ msg: 'Ocurrió un error al actualizar la contraseña' });
+  }
+};
+
+
 
