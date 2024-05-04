@@ -1,56 +1,33 @@
 import { PrismaClient } from '@prisma/client';
-import jwt from 'jsonwebtoken';
+import { verificarToken } from '../helpers/crearJWT.js';
 
 const prisma = new PrismaClient();
 
-export const verificarAdmin = async (req, res, next) => {
-    if (!req.headers.authorization) {
-        return res.status(404).json({ msg: "Lo sentimos, debes proporcionar un token" });
-    }
-
-    const { authorization } = req.headers;
-
+export const checkRoleAuth = (roles) => async (req, res, next) => {
     try {
-        const { id, Rol } = jwt.verify(authorization.split(' ')[1], process.env.JWT_SECRET);
+        const authorizationHeader = req.headers.authorization;
+        if (!authorizationHeader) {
+            return res.status(401).json({ error: 'Se requiere una cabecera de autorización' });
+        }
 
-        if (Rol === "Administrador") {
-            const usuarioBDD = await prisma.usuario.findUnique({
-                where: {
-                    id: parseInt(id)
-                },
-                select: {
-                    id: true,
-                    nombre: true, 
-                    email: true,
-                }
-            });
-
-            if (!usuarioBDD) {
-                return res.status(404).json({ msg: "Lo sentimos, el usuario no se encuentra registrado" });
+        const token = authorizationHeader.split(' ').pop(); // Se obtiene el token de la cabecera de autorización
+        const tokenData = await verificarToken(token); // Se verifica el token
+        const userData = await prisma.usuario.findUnique({ // Se busca al usuario en la base de datos utilizando su ID
+            where: {
+                id: tokenData.id
+            },
+            select: {
+                Rol: true
             }
+        });
 
-            req.usuarioBDD = usuarioBDD;
-            next();
+        if ([].concat(roles).includes(userData.Rol)) { // Se verifica si el rol del usuario coincide con alguno de los roles permitidos
+            next(); // Se permite que la solicitud continúe
         } else {
-            const usuarioBDD = await prisma.usuario.findUnique({
-                where: {
-                    id: parseInt(id)
-                },
-                select: {
-                    id: true,
-                    nombre: true, 
-                    email: true,
-                }
-            });     
-            if (!usuarioBDD) {
-                return res.status(404).json({ msg: "Lo sentimos, el usuario no se encuentra registrado" });
-            }
-
-            req.usuarioBDD = usuarioBDD;
-            next();   
+            res.status(403).json({ error: 'No tienes permisos' }); // Se devuelve un error de permisos si el usuario no tiene el rol adecuado
         }
     } catch (error) {
-        const e = new Error("Formato del token no válido");
-        return res.status(404).json({ msg: e.message });
+        console.error(error);
+        res.status(500).json({ error: 'Ha ocurrido un error interno del servidor' }); // Se devuelve un error interno del servidor en caso de excepción
     }
 };

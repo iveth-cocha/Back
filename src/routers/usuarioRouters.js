@@ -1,7 +1,7 @@
 // usuarioRoutes.js
 import { Router } from 'express';
 import { login,solicitudRegistro, registro, detalleUsuario, actualizarUsuario, eliminarUsuario, listarUsuarios, confirmEmail, recuperarPassword, comprobarTokenPasword, nuevoPassword, actualizarContraseña} from '../controllers/usuarioController.js';
-import {verificarAdmin, verificarRegistrador, verificarVisualizador} from '../middlewares/autenticacion.js'
+import {checkRoleAuth} from '../middlewares/autenticacion.js'
 
 //Crear rutas para cada perfil
 const router = Router();
@@ -13,19 +13,19 @@ router.post('/login', login);
 router.post('/solicitar-registro', solicitudRegistro);
 
 // Ruta para crear un nuevo usuario
-router.post('/registro', registro);
+router.post('/registro', checkRoleAuth(['Administrador']), registro);
 
 // Ruta para ver el detalle de un usuario
-router.get('/detalle/usuario/:id',detalleUsuario );
+router.get('/detalle/usuario/:id', checkRoleAuth(['Administrador']), detalleUsuario );
 
 // Ruta para actualizar un usuario
-router.put('/actualizar/usuario/:id', actualizarUsuario );
+router.put('/actualizar/usuario/:id', checkRoleAuth(['Administrador']), actualizarUsuario );
 
 // Ruta para eliminar un usuario
-router.delete('/eliminar/usuario/:id',eliminarUsuario);
+router.delete('/eliminar/usuario/:id', checkRoleAuth(['Administrador']), eliminarUsuario);
 
 // Ruta para listar los usuarios
-router.get('/usuarios', listarUsuarios);
+router.get('/usuarios', checkRoleAuth(['Administrador']), listarUsuarios);
 
 // Ruta para confirmar email de un usuario
 router.get('/confirmar/:token', confirmEmail);

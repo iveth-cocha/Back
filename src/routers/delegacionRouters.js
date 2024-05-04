@@ -1,21 +1,22 @@
 import { Router } from 'express';
 import { registrarDelegacion,detalleDelegacion, actualizarDelegacion, eliminarDelegacion, listarDelegaciones} from '../controllers/delegacionController.js';
+import {checkRoleAuth} from '../middlewares/autenticacion.js'
 
 const router = Router();
 
-// Ruta para crear un nuevo usuario:
-router.post('/registro/delegacion', registrarDelegacion);
+// Ruta para crear una nueva delegacion:
+router.post('/registro/delegacion', checkRoleAuth(['Administrador', 'Regristrador']),  registrarDelegacion);
 
-// Ruta para ver el detalle de un usuario _
-router.get('/detalle/delegacion', detalleDelegacion );
+// Ruta para ver el detalle de una nueva delegacion:
+router.get('/detalle/delegacion', checkRoleAuth(['Administrador', 'Visualizador', 'Regristrador']),  detalleDelegacion );
 
-// Ruta para actualizar un usuario:
-router.put('/actualizar/delegacion', actualizarDelegacion );
+// Ruta para actualizar una nueva delegacion:
+router.put('/actualizar/delegacion', checkRoleAuth(['Administrador', 'Regristrador']),  actualizarDelegacion );
 
-// Ruta para eliminar un usuario:
-router.delete('/eliminar/delegacion',eliminarDelegacion);
+// Ruta para eliminar una nueva delegacion:
+router.delete('/eliminar/delegacion', checkRoleAuth(['Administrador']), eliminarDelegacion);
 
-// Ruta para listar los usuarios:
-router.get('/delegaciones', listarDelegaciones);
+// Ruta para listar las delegaciones:
+router.get('/delegaciones', checkRoleAuth(['Administrador', 'Visualizador', 'Regristrador']),  listarDelegaciones);
 
 export default router;
