@@ -1,6 +1,6 @@
 // usuarioRoutes.js
 import { Router } from 'express';
-import { login,solicitudRegistro, registro, detalleUsuario, actualizarUsuario, eliminarUsuario, listarUsuarios, confirmEmail, recuperarPassword, comprobarTokenPasword, nuevoPassword, actualizarContraseña} from '../controllers/usuarioController.js';
+import { login,solicitudRegistro, registro, detalleUsuario, perfil, actualizarUsuario, eliminarUsuario, listarUsuarios, confirmEmail, recuperarPassword, comprobarTokenPasword, nuevoPassword, actualizarContraseña} from '../controllers/usuarioController.js';
 import {checkRoleAuth} from '../middlewares/autenticacion.js'
 
 //Crear rutas para cada perfil
@@ -17,6 +17,8 @@ router.post('/registro', checkRoleAuth(['Administrador']), registro);
 
 // Ruta para ver el detalle de un usuario
 router.get('/detalle/usuario/:id', checkRoleAuth(['Administrador']), detalleUsuario );
+
+router.get('/perfil',checkRoleAuth(['Administrador, Regristrador, Visualizador']), perfil);
 
 // Ruta para actualizar un usuario
 router.put('/actualizar/usuario/:id', checkRoleAuth(['Administrador']), actualizarUsuario );

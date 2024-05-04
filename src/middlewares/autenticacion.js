@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { verificarToken } from '../helpers/crearJWT.js';
+import { VDToken } from '../helpers/crearJWT.js';
+
 
 const prisma = new PrismaClient();
 
@@ -7,11 +8,12 @@ export const checkRoleAuth = (roles) => async (req, res, next) => {
     try {
         const authorizationHeader = req.headers.authorization;
         if (!authorizationHeader) {
-            return res.status(401).json({ error: 'Se requiere una cabecera de autorización' });
+            return res.status(401).json({ error: 'Se requiere un token de autorización' });
         }
 
         const token = authorizationHeader.split(' ').pop(); // Se obtiene el token de la cabecera de autorización
-        const tokenData = await verificarToken(token); // Se verifica el token
+        const tokenData = await VDToken(token, process.env.JWT_SECRET); // Se verifica el token
+        
         const userData = await prisma.usuario.findUnique({ // Se busca al usuario en la base de datos utilizando su ID
             where: {
                 id: tokenData.id
@@ -28,6 +30,6 @@ export const checkRoleAuth = (roles) => async (req, res, next) => {
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Ha ocurrido un error interno del servidor' }); // Se devuelve un error interno del servidor en caso de excepción
+        res.status(500).json({ error: 'Formato de token invalido' }); // Se devuelve un error interno del servidor en caso de excepción
     }
 };

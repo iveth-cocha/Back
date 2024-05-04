@@ -1,6 +1,6 @@
 import { encrypPassword,matchPassword, crearToken } from '../middlewares/bcrypt.js';
 import {sendMailToUser, sendMailToResetPassword, sendMailToAdmin}  from '../config/nodemailer.js'; 
-import {generarJWT} from "../helpers/crearJWT.js"
+import {generarJWT, VDToken} from "../helpers/crearJWT.js"
 
 
 import { PrismaClient } from '@prisma/client';
@@ -200,6 +200,43 @@ export const detalleUsuario = async (req, res) => {
   } catch (error) {
     console.error('Error al buscar el usuario:', error);
     res.status(500).json({ msg: 'Ocurrió un error al buscar el usuario' });
+  }
+};
+
+export const perfil = async (req, res) => {
+  try {
+    // Obtener el token de autorización del encabezado de la solicitud
+    const authorizationHeader = req.headers.authorization;
+    if (!authorizationHeader) {
+      return res.status(401).json({ error: 'Se requiere una cabecera de autorización' });
+    }
+
+    // Extraer el token del encabezado de autorización
+    const token = authorizationHeader.split(' ')[1];
+
+    // Verificar y decodificar el token para obtener la información del usuario
+    const tokenData = await VDToken(token);
+    if (!tokenData || !tokenData.id) {
+      return res.status(401).json({ error: 'Token de autorización no válido' });
+    }
+
+    // Buscar el perfil del usuario en la base de datos utilizando su ID obtenido del token
+    const usuario = await prisma.usuario.findUnique({
+      where: {
+        id: tokenData.id,
+      }
+    });
+
+    // Verificar si se encontró el usuario en la base de datos
+    if (!usuario) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    // Devolver el perfil del usuario como respuesta
+    return res.status(200).json({ usuario });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Ha ocurrido un error interno del servidor' });
   }
 };
 
