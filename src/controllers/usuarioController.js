@@ -103,6 +103,7 @@ export const registro = async (req, res) => {
         email: email,
       },
     });
+    
     if (verificarEmailBDD) {
       return res.status(400).json({ msg: "Lo sentimos, el email ya se encuentra registrado" });
     }

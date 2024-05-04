@@ -118,26 +118,33 @@ export const detalleDelegacion = async (req, res) => {
         let delegacionEncontrada;
 
         // Buscar la delegación por el número de investigación previa si se proporcionó
-        if (numero_investigacion_previa) {
+        if (numero_investigacion_previa || numero_instruccion_fiscal) {
             delegacionEncontrada = await prisma.delegacion.findFirst({
                 where: {
-                    numero_investigacion_previa: numero_investigacion_previa.toString()
+                    OR: [
+                        {
+                            numero_investigacion_previa: numero_investigacion_previa?.toString(),
+                        },
+                        {
+                            numero_instruccion_fiscal: numero_instruccion_fiscal?.toString(),
+                        }
+                    ]
                 }
             });
+        } else {
+            return res.status(404).send('No se proporcionó ningún número de investigación previa ni número de instrucción fiscal');
         }
-
-        // Si no se encontró la delegación por el número de investigación previa, buscar por el número de instrucción fiscal
-        if (!delegacionEncontrada && numero_instruccion_fiscal) {
-            delegacionEncontrada = await prisma.delegacion.findFirst({
-                where: {
-                    numero_instruccion_fiscal: numero_instruccion_fiscal.toString()
-                }
-            });
-        }
-
+        
         // Verificar si se encontró alguna delegación
         if (!delegacionEncontrada) {
-            return res.status(404).send('No se encontró ninguna delegación con los números proporcionados');
+            if (numero_investigacion_previa || numero_instruccion_fiscal) {
+                if (numero_investigacion_previa) {
+                    return res.status(404).send('No se encontró ninguna delegación con ese número de investigación previa');
+                }
+                if (numero_instruccion_fiscal) {
+                    return res.status(404).send('No se encontró ninguna delegación con ese número de instrucción fiscal');
+                }
+            }
         }
 
         // Si se encontró la delegación, enviarla como respuesta
@@ -162,6 +169,7 @@ export const actualizarDelegacion = async (req, res) => {
 
         // Buscar la delegación por el número de investigación previa si se proporcionó
         let delegacionExistente;
+        
         if (numero_investigacion_previa) {
             delegacionExistente = await prisma.delegacion.findFirst({
                 where: {
