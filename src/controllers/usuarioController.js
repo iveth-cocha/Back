@@ -70,14 +70,14 @@ export const login = async (req, res) => {
 
 // Solicitud para el registro un nuevo usuario
 export const solicitudRegistro = async (req, res) => {
-  const { cedula, nombre, email, mensaje } = req.body;
+  const { cedula, nombre, email, mensaje, Rol } = req.body;
   try {
     // Verifica si todos los campos están llenos
-    if (!cedula ||!nombre || !email || !mensaje) {
+    if (!cedula ||!nombre || !email || !mensaje|| !Rol) {
       return res.status(400).json({ msg: "Debes llenar todos los campos" });
     }
     // Envía un correo electrónico al administrador para notificar la solicitud de registro
-    await sendMailToAdmin(cedula, email, nombre, mensaje);
+    await sendMailToAdmin(cedula, email, nombre, mensaje, Rol);
 
     // Envía una respuesta de éxito al cliente
     res.status(200).json({ msg: "Tu solicitud de registro ha sido enviada correctamente. Espera la confirmación del administrador." });
@@ -290,8 +290,15 @@ export const actualizarUsuario = async (req, res) => {
 
 // Eliminar un usuario
 export const eliminarUsuario = async (req, res) => {
+
+  const { id } = req.params;
+
   try {
-    const { id } = req.params;
+
+    if (!id) {
+      return res.status(404).json({ msg: 'Se requiere proporcionar un id de un usuario' });
+    }
+
     const usuario = await prisma.usuario.findUnique({
       where: {
         id: Number(id),

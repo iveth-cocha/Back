@@ -8,13 +8,13 @@ const router = Router();
 router.post('/registro/agente', checkRoleAuth(['Administrador', 'Regristrador']),  registrarAgente);
 
 // Ruta para ver el detalle de un usuario
-router.get('/detalle/agente', checkRoleAuth(['Administrador', 'Regristrador']),  detalleAgente );
+router.get('/detalle/agente/:id', checkRoleAuth(['Administrador', 'Regristrador']),  detalleAgente );
 
 // Ruta para actualizar un usuario
-router.put('/actualizar/agente', checkRoleAuth(['Administrador', 'Regristrador']),  actualizarAgente );
+router.put('/actualizar/agente/:id', checkRoleAuth(['Administrador', 'Regristrador']),  actualizarAgente );
 
 // Ruta para eliminar un usuario
-router.delete('/eliminar/agente', checkRoleAuth(['Administrador', 'Regristrador']), eliminarAgente);
+router.delete('/eliminar/agente/:id', checkRoleAuth(['Administrador', 'Regristrador']), eliminarAgente);
 
 // Ruta para listar los usuarios
 router.get('/agentes', checkRoleAuth(['Administrador', 'Regristrador']),  listarAgentes);

@@ -211,9 +211,10 @@ export const actualizarDelegacion = async (req, res) => {
 
 // Eliminar una delegacion
 export const eliminarDelegacion = async (req, res) => {
-    try {
-        const { numero_investigacion_previa, numero_instruccion_fiscal } = req.body; // Números de investigación previa e instrucción fiscal
+    
+    const { numero_investigacion_previa, numero_instruccion_fiscal } = req.body; // Números de investigación previa e instrucción fiscal
 
+    try {
         // Verificar si se proporcionó al menos uno de los números de investigación previa o instrucción fiscal
         if (!numero_investigacion_previa && !numero_instruccion_fiscal) {
             return res.status(400).send('Se requiere proporcionar al menos un número de investigación previa o un número de instrucción fiscal');
