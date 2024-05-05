@@ -81,34 +81,37 @@ export const detalleAgente = async (req, res) => {
 
 // Actualizar un Agente
 export const actualizarAgente = async (req, res) => {
+
+  const { cedula } = req.body;
+  const datosActualizadosAG = req.body; // Datos actualizados de la delegación
+
+
     try {
-      const { delito } = req.body;
-      const datosDelitoActualizado = req.body; 
 
-      if (!delito) {
-        return res.status(400).send('Se requiere proporcionar el nombre del delito');
-      }
-  
-      let delitoExistente;
-      if (delito){
-        delitoExistente = await prisma.delito.findFirst({
-          where: {
-            delito: delito.toString()
-          }
-        });
+      if (!cedula) {
+        return res.status(400).send('Se requiere proporcionar una cedula valida');
       }
 
-      if(!delitoExistente){
-        return res.status(404).send('No se encontró el delito a actualizar');
-      }
-
-      const delitoActualizado = await prisma.delito.update({
+      const agente = await prisma.agente.findUnique({
         where: {
-          id: delitoExistente.id
+            cedula: cedula?.toString(),
         },
-        data: datosDelitoActualizado
       });
-      res.status(200).send(delitoActualizado);
+
+      if (!agente) {
+        return res.status(404).json({ msg: `Lo sentimos, no se encontró el agente con la cedula ${cedula}` });
+    }
+  
+      // Actualizar el perfil del usuario
+      await prisma.agente.update({
+        where: {
+          cedula: cedula?.toString(),
+        },
+        data: datosActualizadosAG
+
+    });
+
+      res.status(200).json({ msg: "Perfil actualizado correctamente" });
     } catch (error) {
       // Si hay algún error, envía una respuesta de error
       console.error('Error, actualizar un delito:', error);
