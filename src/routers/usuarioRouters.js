@@ -9,7 +9,7 @@ const router = Router();
 // Ruta para logear un usuario
 router.post('/login', login);
 
-// Ruta para solicitar un registro
+// Ruta para solicitar un registro sin rol 
 router.post('/solicitar-registro', solicitudRegistro);
 
 // Ruta para crear un nuevo usuario
