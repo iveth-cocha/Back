@@ -2,14 +2,18 @@ import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 dotenv.config();
 
-let transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
     service: 'gmail',
-    host: process.env.HOST_MAILTRAP,
-    port: process.env.PORT_MAILTRAP,
+    host: process.env.HOST_GMAIL,
+    port: process.env.PORT_GMAIL,
+    secure: false, // Use `true` for port 465, `false` for all other ports
     auth: {
-        user: process.env.USER_MAILTRAP,
-        pass: process.env.PASS_MAILTRAP,
+        user: process.env.USER_GMAIL,
+        pass: process.env.PASS_GMAIL,
     },
+    tls: {
+        rejectUnauthorized: false // Desactiva la verificación del certificado
+    }
 });
 
 export const sendMailToUser = async (email, token) => {
@@ -17,8 +21,8 @@ export const sendMailToUser = async (email, token) => {
         // Construir el enlace de confirmación con el token
         const confirmationLink = `${process.env.URL_BACKEND}confirmar/${encodeURIComponent(token)}`;
 
-        let mailOptions = {
-            from: process.env.USER_MAILTRAP,
+        const mailOptions = {
+            from: process.env.USER_GMAIL,
             to: email,
             subject: "Verificación de Correo y Contraseña",
             html: `
@@ -136,8 +140,8 @@ export const sendMailToResetPassword = async (email, token) => {
         // Construir el enlace de reestablecimiento de contraseña con el token
         const resetPasswordLink = `${process.env.URL_BACKEND}recuperar-password/${token}`;
 
-        let mailOptions = {
-            from: process.env.USER_MAILTRAP,
+        const mailOptions = {
+            from: process.env.USER_GMAIL,
             to: email,
             subject: "Recuperación de Contraseña",
             html: `
@@ -180,8 +184,11 @@ export const sendMailToResetPassword = async (email, token) => {
                     
                             p {
                                 color: #555;
-                                margin-left: 60px;
-                                /* Agrega un margen derecho para dejar espacio para la imagen */
+                            }
+                    
+                            .mensaje{
+                                color: #555;
+                                margin-left: 70px;
                             }
                     
                     
@@ -223,11 +230,14 @@ export const sendMailToResetPassword = async (email, token) => {
                     
                     <body>
                         <div class="card">
+                            <br>
                             <header>UNIDAD NACIONAL DE CIBERDELITO</header>
                             <h3>Recuperación de Contraseña</h3>
-                            <p>Hola, se ha solicitado una recuperación de contraseña para el sistema de delegaciones de la Unidad Nacional de Ciberdelitos.</p>
-                            <p> Si usted la ha solicitadi haga click a continuación, si no omita este mensaje</p>
+                            <p class="mensaje">Hola, se ha solicitado una recuperación de contraseña para el sistema de delegaciones de la Unidad Nacional
+                                de Ciberdelitos.</p>
+                            <p style="text-align: center;"> Si usted la ha solicitado haga click a continuación.</p>
                             <a href="${resetPasswordLink}" class="button">Recuperar contraseña</a>
+                            <p style="text-align: center;"> Si no omita este mensaje</p></p>
                             <footer><img src="https://i.ibb.co/wyFDdcN/PNE.png"></footer>
                         </div>
                     </body>
@@ -245,9 +255,9 @@ export const sendMailToResetPassword = async (email, token) => {
 
 export const sendMailToAdmin = async (cedula, email, nombreUsuario, mensaje) => {
     try {
-        let mailOptions = {
-            from: process.env.USER_MAILTRAP,
-            to: process.env.ADMIN_EMAIL,
+        const mailOptions = {
+            from: process.env.USER_GMAIL,
+            to: process.env.ADMIN_GMAIL,
             subject: "Solicitud de Registro",
             html: `
                 <html>

@@ -109,7 +109,7 @@ export const registro = async (req, res) => {
     }
 
     // Verificar si el rol seleccionado es válido
-    const rolesValidos = ['Administrador', 'Visualizador', 'Regristrador'];
+    const rolesValidos = ['Administrador', 'Visualizador', 'Registrador'];
     if (!rolesValidos.includes(rol)) {
       return res.status(400).json({ msg: "Rol inválido" });
     }

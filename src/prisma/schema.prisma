@@ -26,7 +26,7 @@ model Agente {
   Licencia String?   @db.VarChar(255) 
   Residencia String?   @db.VarChar(255) 
   Estado_Civil String?   @db.VarChar(255) 
-  FechaNacimiento DateTime
+  FechaNacimiento String?   @db.VarChar(255)
   Genero String?   @db.VarChar(255) 
   Telefono String?   @db.VarChar(255)
   Email String?   @db.VarChar(255) 
@@ -59,7 +59,7 @@ model Usuario {
 enum RolEnum {
   Administrador
   Visualizador
-  Regristrador
+  Registrador
 }
 
 //Modelo Mapeo

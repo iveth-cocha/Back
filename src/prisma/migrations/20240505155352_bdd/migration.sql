@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Agente" ALTER COLUMN "FechaNacimiento" DROP NOT NULL,
+ALTER COLUMN "FechaNacimiento" SET DATA TYPE VARCHAR(255);

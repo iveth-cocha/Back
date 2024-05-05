@@ -5,18 +5,18 @@ import {checkRoleAuth} from '../middlewares/autenticacion.js'
 const router = Router();
 
 // Ruta para crear un nuevo usuario
-router.post('/registro/agente', checkRoleAuth(['Administrador', 'Regristrador']),  registrarAgente);
+router.post('/registro/agente', checkRoleAuth(['Administrador', 'Registrador']),  registrarAgente);
 
 // Ruta para ver el detalle de un usuario
-router.get('/detalle/agente/:id', checkRoleAuth(['Administrador', 'Regristrador']),  detalleAgente );
+router.get('/detalle/agente', checkRoleAuth(['Administrador', 'Registrador']),  detalleAgente );
 
-// Ruta para actualizar un usuario
-router.put('/actualizar/agente/:id', checkRoleAuth(['Administrador', 'Regristrador']),  actualizarAgente );
+// Definición de la ruta para actualizar un agente por su cédula
+router.put('/actualizar/agente/:cedula', checkRoleAuth(['Administrador', 'Registrador']), actualizarAgente);
 
 // Ruta para eliminar un usuario
-router.delete('/eliminar/agente/:id', checkRoleAuth(['Administrador', 'Regristrador']), eliminarAgente);
+router.delete('/eliminar/agente', checkRoleAuth(['Administrador', 'Registrador']), eliminarAgente);
 
 // Ruta para listar los usuarios
-router.get('/agentes', checkRoleAuth(['Administrador', 'Regristrador']),  listarAgentes);
+router.get('/agentes', checkRoleAuth(['Administrador', 'Registrador']),  listarAgentes);
 
 export default router;

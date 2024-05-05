@@ -81,43 +81,39 @@ export const detalleAgente = async (req, res) => {
 
 // Actualizar un Agente
 export const actualizarAgente = async (req, res) => {
+  const { cedula } = req.params; // Obtener la cédula del parámetro de la ruta
+  const datosActualizadosAG = req.body; // Datos actualizados del agente
 
-  const { cedula } = req.body;
-  const datosActualizadosAG = req.body; // Datos actualizados de la delegación
-
-
-    try {
-
-      if (!cedula) {
-        return res.status(400).send('Se requiere proporcionar una cedula valida');
-      }
-
-      const agente = await prisma.agente.findUnique({
-        where: {
-            cedula: cedula?.toString(),
-        },
-      });
-
-      if (!agente) {
-        return res.status(404).json({ msg: `Lo sentimos, no se encontró el agente con la cedula ${cedula}` });
-    }
-  
-      // Actualizar el perfil del usuario
-      await prisma.agente.update({
-        where: {
-          cedula: cedula?.toString(),
-        },
-        data: datosActualizadosAG
-
+  try {
+    // Buscar al agente por su cédula
+    const agenteActualizado = await prisma.agente.findUnique({
+      where: {
+        Cedula: cedula?.toString()
+      },
     });
 
-      res.status(200).json({ msg: "Perfil actualizado correctamente" });
-    } catch (error) {
-      // Si hay algún error, envía una respuesta de error
-      console.error('Error, actualizar un delito:', error);
-      res.status(500).send('Error, actualizar un delito');
+    // Verificar si se encontró al agente
+    if (!agenteActualizado) {
+      return res.status(404).json({ msg: `Lo sentimos, no se encontró el agente con la cédula ${cedula}` });
     }
+  
+    // Actualizar el perfil del agente
+    await prisma.agente.update({
+      where: {
+        Cedula: cedula?.toString(),
+      },
+      data: datosActualizadosAG // Actualizar con los datos proporcionados en el cuerpo de la solicitud
+    });
+
+    res.status(200).json({ msg: "Perfil actualizado correctamente" });
+  } catch (error) {
+    // Si hay algún error, envía una respuesta de error
+    console.error('Error al actualizar un agente:', error);
+    res.status(500).send('Error al actualizar un agente');
+  }
 };
+
+
   
 // Eliminar un delito
 export const eliminarAgente = async (req, res) => {
