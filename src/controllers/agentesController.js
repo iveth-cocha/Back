@@ -20,6 +20,11 @@ export const registrarAgente = async (req, res) => {
       return res.status(400).json({ error: 'La cédula ya está registrada' });
     }
 
+    // Concatenar la hora 00:00:00 a la fecha de nacimiento
+    if (agentesNuevos.FechaNacimiento) {
+      agentesNuevos.FechaNacimiento += ' 00:00:00';
+    }
+
     //Una vez validado se crea el nuevo agente
 
     const nuevoAgente = await prisma.agente.create({
