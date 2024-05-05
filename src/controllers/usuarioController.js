@@ -70,14 +70,14 @@ export const login = async (req, res) => {
 
 // Solicitud para el registro un nuevo usuario
 export const solicitudRegistro = async (req, res) => {
-  const { cedula, nombre, email, mensaje, Rol } = req.body;
+  const { cedula, nombre, email, mensaje } = req.body;
   try {
     // Verifica si todos los campos están llenos
-    if (!cedula ||!nombre || !email || !mensaje|| !Rol) {
+    if (!cedula ||!nombre || !email || !mensaje ) {
       return res.status(400).json({ msg: "Debes llenar todos los campos" });
     }
     // Envía un correo electrónico al administrador para notificar la solicitud de registro
-    await sendMailToAdmin(cedula, email, nombre, mensaje, Rol);
+    await sendMailToAdmin(cedula, email, nombre, mensaje);
 
     // Envía una respuesta de éxito al cliente
     res.status(200).json({ msg: "Tu solicitud de registro ha sido enviada correctamente. Espera la confirmación del administrador." });

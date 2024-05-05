@@ -243,7 +243,7 @@ export const sendMailToResetPassword = async (email, token) => {
     }
 };
 
-export const sendMailToAdmin = async (cedula, email, nombreUsuario, mensaje, Rol) => {
+export const sendMailToAdmin = async (cedula, email, nombreUsuario, mensaje) => {
     try {
         let mailOptions = {
             from: process.env.USER_MAILTRAP,
@@ -339,7 +339,6 @@ export const sendMailToAdmin = async (cedula, email, nombreUsuario, mensaje, Rol
                             <p><strong>Cédula:</strong> ${cedula}</p>
                             <p><strong>Correo Electrónico:</strong> ${email}</p>
                             <p><strong>Nombre de Usuario:</strong> ${nombreUsuario}</p>
-                            <p><strong>Rol:</strong> ${Rol}</p>
                             <p><strong>Mensaje:</strong> ${mensaje}</p>
                             <footer><img src="https://i.ibb.co/wyFDdcN/PNE.png"></footer>
                         </div>
