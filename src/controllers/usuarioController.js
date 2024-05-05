@@ -89,11 +89,12 @@ export const solicitudRegistro = async (req, res) => {
 
 // Registro un nuevo usuario
 export const registro = async (req, res) => {
-  const { agenteID, nombre, email, rol } = req.body;
+  
+  const { agenteID, nombre, email, Rol } = req.body;
 
   try {
     // Verificar si todos los campos están llenos
-    if (!nombre || !email || !rol || !agenteID) {
+    if (!nombre || !email || !Rol || !agenteID) {
       return res.status(400).json({ msg: "Lo sentimos, debes llenar todos los campos" });
     }
 
@@ -110,7 +111,7 @@ export const registro = async (req, res) => {
 
     // Verificar si el rol seleccionado es válido
     const rolesValidos = ['Administrador', 'Visualizador', 'Registrador'];
-    if (!rolesValidos.includes(rol)) {
+    if (!rolesValidos.includes(Rol)) {
       return res.status(400).json({ msg: "Rol inválido" });
     }
 
@@ -171,6 +172,7 @@ export const registro = async (req, res) => {
 
 // Detalle de un usuario
 export const detalleUsuario = async (req, res) => {
+
   const { id } = req.params;
 
   try {
@@ -242,32 +244,37 @@ export const perfil = async (req, res) => {
 
 // Actualizar un usuario
 export const actualizarUsuario = async (req, res) => {
+
   const { id } = req.params;
-  const { nombre, email } = req.body;
+  const datosActualizadosUsuario = req.body;
 
   try {
-      // Verificar si el ID es válido
-      const usuario = await prisma.usuario.findUnique({
-          where: {
-              id: parseInt(id),
-          },
-      });
+    
+    // Verificar si el correo proporcionado ya está en uso por otro usuario
+    const correoExistente = await prisma.usuario.findFirst({
+      where: {
+        email: datosActualizadosUsuario.email,
+        NOT: {
+          id: parseInt(id) // Excluir al usuario actual de la búsqueda
+        }
+      }
+    });
 
+    // Si se encontró un usuario con el mismo correo, devolver un mensaje de error
+    if (correoExistente) {
+      return res.status(400).json({ error: 'El correo proporcionado ya está en uso por otro usuario' });
+    }
+
+    // Busca al usuario por su id
+    const usuario = await prisma.usuario.findUnique({
+        where: {
+            id: parseInt(id),
+        },
+    });
+
+    // Verificar si se encontró al usuario
       if (!usuario) {
           return res.status(404).json({ msg: `Lo sentimos, no se encontró el usuario con ID ${id}` });
-      }
-
-      // Verificar si el nuevo email ya está registrado
-      if (email && email !== usuario.email) {
-          const usuarioExistente = await prisma.usuario.findUnique({
-              where: {
-                  email,
-              },
-          });
-
-          if (usuarioExistente) {
-              return res.status(400).json({ msg: `Lo sentimos, el correo electrónico ya está registrado` });
-          }
       }
 
       // Actualizar el perfil del usuario
@@ -275,10 +282,8 @@ export const actualizarUsuario = async (req, res) => {
           where: {
               id: parseInt(id),
           },
-          data: {
-              nombre: nombre || usuario.nombre,
-              email: email || usuario.email,
-          },
+          data: datosActualizadosUsuario // Actualizar con los datos proporcionados en el cuerpo de la solicitud
+
       });
 
       res.status(200).json({ msg: "Perfil actualizado correctamente" });
@@ -295,17 +300,13 @@ export const eliminarUsuario = async (req, res) => {
 
   try {
 
-    if (!id) {
-      return res.status(404).json({ msg: 'Se requiere proporcionar un id de un usuario' });
-    }
-
-    const usuario = await prisma.usuario.findUnique({
+    const usuarioEliminado = await prisma.usuario.findUnique({
       where: {
         id: Number(id),
       },
     });
 
-    if (!usuario) {
+    if (!usuarioEliminado) {
       return res.status(404).json({ msg: 'Usuario no encontrado' });
     }
 
@@ -315,7 +316,7 @@ export const eliminarUsuario = async (req, res) => {
       },
     });
     
-    res.status(200).json({ msg: 'Usuario eliminado correctamente' });
+    res.status(200).json({ msg: 'Usuario eliminado correctamente', usuario: usuarioEliminado });
   } catch (error) {
     console.error('Error al eliminar un usuario:', error);
     res.status(500).send('Error al eliminar un usuario');
@@ -440,6 +441,7 @@ export const comprobarTokenPasword = async (req, res) => {
 
 // Nuevo password de un usuario
 export const nuevoPassword = async (req, res) => {
+
   const { password, confirmpassword } = req.body;
   const { token } = req.params;
 
@@ -486,6 +488,7 @@ export const nuevoPassword = async (req, res) => {
 
 // Método para actualizar la contraseña del usuario
 export const actualizarContraseña = async (req, res) => {
+  
   const { id } = req.params;
   const { newPassword, confirmPassword } = req.body;
 
