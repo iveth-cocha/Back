@@ -3,15 +3,14 @@ const prisma = new PrismaClient();
 
 // Registro un nuevo delito
 export const registrarDelito = async (req, res) => {
+
+  const delitosNuevos = req.body; // Suponiendo que recibes todos los datos necesarios para crear un delito en req.body
+
     try {
-      const delitosNuevos = req.body; // Suponiendo que recibes todos los datos necesarios para crear un delito en req.body
       const nuevoDelito = await prisma.delito.create({
-        data:{
-          delito: delitosNuevos.delito,
-          seccion: delitosNuevos.seccion
-        }
+        data: delitosNuevos
       })
-      res.status(200).send('Delito creado correctamente');
+      res.status(200).json({ mensaje: 'Agente agregado correctamente', delito: nuevoDelito });
     } catch (error) {
       // Si hay algún error, envía una respuesta de error
       console.error('Error al registrar delito:', error);
@@ -21,24 +20,22 @@ export const registrarDelito = async (req, res) => {
 
 // Detalle de un delito
 export const detalleDelito = async (req, res) => {
+
+  const { id } = req.params;
+
   try {
-    const { delito } = req.body;
 
-    if (!delito) {
-      return res.status(400).send('Se requiere proporcionar el nombre del delito');
-    }
-
-    const delitoEncontrado = await prisma.delito.findFirst({
+    const delitoDetalle = await prisma.delito.findUnique({
       where: {
-        delito: delito.toString()
+        id: parseInt(id),
       }
     });
 
-    if (!delitoEncontrado) {
-      return res.status(404).send('No se encontró ningún delito con ese nombre');
+    if (!delitoDetalle) {
+      return res.status(404).send(`Lo sentimos, no se encontró el delito con el id: ${id}`);
     }
     
-    res.status(200).send(delitoEncontrado);
+    res.status(200).send(delitoDetalle);
   } catch (error) {
     // Si hay algún error, envía una respuesta de error
     console.error('Error, detalle de un delito:', error);
@@ -48,34 +45,30 @@ export const detalleDelito = async (req, res) => {
 
 // Actualizar un delito
 export const actualizarDelito = async (req, res) => {
-    try {
-      const { delito } = req.body;
-      const datosDelitoActualizado = req.body; 
 
-      if (!delito) {
-        return res.status(400).send('Se requiere proporcionar el nombre del delito');
-      }
-  
-      let delitoExistente;
-      if (delito){
-        delitoExistente = await prisma.delito.findFirst({
-          where: {
-            delito: delito.toString()
-          }
-        });
-      }
+  const { id } = req.params;
+  const datosDelitoActualizado = req.body; 
+
+    try {
+
+      const delitoExistente = await prisma.delito.findUnique({
+        where: {
+            id: parseInt(id),
+        },
+      });
 
       if(!delitoExistente){
-        return res.status(404).send('No se encontró el delito a actualizar');
+        return res.status(404).json({ msg: `Lo sentimos, no se encontró el delito con ID ${id}` });
       }
 
-      const delitoActualizado = await prisma.delito.update({
+      await prisma.delito.update({
         where: {
-          id: delitoExistente.id
+            id: parseInt(id),
         },
-        data: datosDelitoActualizado
+        data: datosDelitoActualizado // Actualizar con los datos proporcionados en el cuerpo de la solicitud
+
       });
-      res.status(200).send(delitoActualizado);
+      res.status(200).send(datosDelitoActualizado);
     } catch (error) {
       // Si hay algún error, envía una respuesta de error
       console.error('Error, actualizar un delito:', error);
@@ -85,30 +78,34 @@ export const actualizarDelito = async (req, res) => {
   
 // Eliminar un delito
 export const eliminarDelito = async (req, res) => {
+  const { id } = req.params;
+
   try {
-    const { delito } = req.body;
-
-    if (!delito) {
-      return res.status(400).send('Se requiere proporcionar el nombre del delito');
-    }
-
-    const delitoEliminado = await prisma.delito.deleteMany({
-      where:{
-        delito:delito.toString()
-      }
+    const delitoEliminado = await prisma.delito.findUnique({
+      where: {
+        id: Number(id),
+      },
     });
 
-    if (delitoEliminado.count ===0){
-      return res.status(404).send('No se encontró ningun delito con ese nombre');
+    if (!delitoEliminado) {
+      return res.status(404).json({ msg: 'Delito no encontrado' });
     }
 
-    res.status(200).send('Delito eliminado correctamente');
+    // Eliminar el delito de la base de datos
+    await prisma.delito.delete({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    res.status(200).json({ msg: 'Delito eliminado correctamente', delito: delitoEliminado });
   } catch (error) {
-      // Si hay algún error, envía una respuesta de error
-      console.error('Error, eliminar un delito:', error);
-      res.status(500).send('Error, eliminar un delito');
+    // Si hay algún error, envía una respuesta de error
+    console.error('Error al eliminar un delito:', error);
+    res.status(500).send('Error al eliminar un delito');
   }
 };
+
 
 // Listar un delito
 export const listarDelitos = async (req, res) => {

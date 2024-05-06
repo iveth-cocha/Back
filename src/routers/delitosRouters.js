@@ -8,13 +8,13 @@ const router = Router();
 router.post('/registro/delito', checkRoleAuth(['Administrador','Registrador']),  registrarDelito);
 
 // Ruta para ver el detalle de un usuario
-router.get('/detalle/delito', checkRoleAuth(['Administrador','Registrador']),   detalleDelito );
+router.get('/detalle/delito/:id', checkRoleAuth(['Administrador','Registrador']),   detalleDelito );
 
 // Ruta para actualizar un usuario
-router.put('/actualizar/delito', checkRoleAuth(['Administrador','Registrador']),   actualizarDelito );
+router.put('/actualizar/delito/:id', checkRoleAuth(['Administrador','Registrador']),   actualizarDelito );
 
 // Ruta para eliminar un usuario
-router.delete('/eliminar/delito', checkRoleAuth(['Administrador','Registrador']),  eliminarDelito);
+router.delete('/eliminar/delito/:id', checkRoleAuth(['Administrador','Registrador']),  eliminarDelito);
 
 // Ruta para listar los usuarios
 router.get('/delitos', checkRoleAuth(['Administrador','Registrador']), listarDelitos);
