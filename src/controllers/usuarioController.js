@@ -273,20 +273,19 @@ export const actualizarUsuario = async (req, res) => {
     });
 
     // Verificar si se encontró al usuario
-      if (!usuario) {
-          return res.status(404).json({ msg: `Lo sentimos, no se encontró el usuario con ID ${id}` });
-      }
+    if (!usuario) {
+        return res.status(404).json({ msg: `Lo sentimos, no se encontró el usuario con ID ${id}` });
+    }
 
-      // Actualizar el perfil del usuario
-      await prisma.usuario.update({
-          where: {
-              id: parseInt(id),
-          },
-          data: datosActualizadosUsuario // Actualizar con los datos proporcionados en el cuerpo de la solicitud
+    // Actualizar el perfil del usuario
+    await prisma.usuario.update({
+      where: {
+          id: parseInt(id),
+      },
+      data: datosActualizadosUsuario // Actualizar con los datos proporcionados en el cuerpo de la solicitud
+    });
 
-      });
-
-      res.status(200).json({ msg: "Perfil actualizado correctamente" });
+    res.status(200).json({ msg: "Perfil actualizado correctamente" });
   } catch (error) {
       console.error('Error al actualizar el perfil:', error);
       res.status(500).json({ msg: 'Ocurrió un error al actualizar el perfil' });

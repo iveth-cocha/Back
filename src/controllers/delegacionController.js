@@ -3,9 +3,10 @@ const prisma = new PrismaClient();
 
 // Registro una nueva delegación
 export const registrarDelegacion = async (req, res) => {
-    try {
-        const datosDelegacion = req.body; // Suponiendo que recibes todos los datos necesarios para crear una delegación en req.body
-  
+
+    const datosDelegacion = req.body; // Suponiendo que recibes todos los datos necesarios para crear una delegación en req.body
+
+    try {  
         const añoActual = new Date().getFullYear(); // Obtenemos el año actual
 
         // Consultamos el último valor de orden para incrementarlo
@@ -21,11 +22,40 @@ export const registrarDelegacion = async (req, res) => {
         
         // Si hay registros existentes, incrementamos el orden en 1; de lo contrario, comenzamos desde 1
         let ordenInicial = 1;
+        
         if (ultimoOrden && ultimoOrden.anio_ingreso === añoActual) {
             ordenInicial = ultimoOrden.orden + 1;
         }
         
         const nuevoOrden = Math.max(ultimoOrden ? ultimoOrden.orden + 1 : 1, ordenInicial);
+        
+        // Validar que los números de investigación previa e instrucción fiscal no estén repetidos
+        const { numero_investigacion_previa, numero_instruccion_fiscal } = datosDelegacion;
+
+        const delegacionExistentePorInvestigacionPrevia = await prisma.delegacion.findFirst({
+            where: {
+                numero_investigacion_previa: numero_investigacion_previa
+            }
+        });
+
+        const delegacionExistentePorInstruccionFiscal = await prisma.delegacion.findFirst({
+            where: {
+                numero_instruccion_fiscal: numero_instruccion_fiscal
+            }
+        });
+
+        if (delegacionExistentePorInvestigacionPrevia) {
+            return res.status(400).json({ error: 'El número de investigación previa ya está registrado' });
+        }
+
+        if (delegacionExistentePorInstruccionFiscal) {
+            return res.status(400).json({ error: 'El número de instrucción fiscal ya está registrado' });
+        }
+
+        // Verificar si los números de investigación previa e instrucción fiscal son iguales
+        if (numero_investigacion_previa === numero_instruccion_fiscal) {
+            return res.status(400).json({ error: 'Los números de investigación previa e instrucción fiscal no pueden ser iguales' });
+        }
 
         const nuevaDelegacion = await prisma.delegacion.create({
             data: {
@@ -95,60 +125,35 @@ export const registrarDelegacion = async (req, res) => {
         });
         
         // Envía una respuesta indicando que se ha creado la delegación con éxito
-        res.status(200).send('Delegación registrada correctamente');
+        res.status(200).json({ mensaje: 'Delegación agregada correctamente', delegacion: nuevaDelegacion });
     } catch (error) {
         // Si hay algún error, envía una respuesta de error
         console.error('Error al registrar la delegación:', error);
         res.status(500).send('Error al registrar la delegación');
-    } finally {
-        await prisma.$disconnect(); // Cierra la conexión a la base de datos
     }
 };
+
   
 // Detalle de una delegacion
 export const detalleDelegacion = async (req, res) => {
+
+    const { id } = req.params; // Obtener el id del parámetro de la ruta
+
     try {
-        const { numero_investigacion_previa, numero_instruccion_fiscal } = req.body;
 
-        // Verificar si se proporcionó alguno de los números de investigación previa o instrucción fiscal
-        if (!numero_investigacion_previa && !numero_instruccion_fiscal) {
-            return res.status(400).send('Se requiere proporcionar al menos un número de investigación previa o un número de instrucción fiscal');
-        }
+        const delegacionDetalle = await prisma.delegacion.findUnique({
+            where: {
+                id: parseInt(id),
+            },
+        });
 
-        let delegacionEncontrada;
-
-        // Buscar la delegación por el número de investigación previa si se proporcionó
-        if (numero_investigacion_previa || numero_instruccion_fiscal) {
-            delegacionEncontrada = await prisma.delegacion.findFirst({
-                where: {
-                    OR: [
-                        {
-                            numero_investigacion_previa: numero_investigacion_previa?.toString(),
-                        },
-                        {
-                            numero_instruccion_fiscal: numero_instruccion_fiscal?.toString(),
-                        }
-                    ]
-                }
-            });
-        } else {
-            return res.status(404).send('No se proporcionó ningún número de investigación previa ni número de instrucción fiscal');
-        }
-        
-        // Verificar si se encontró alguna delegación
-        if (!delegacionEncontrada) {
-            if (numero_investigacion_previa || numero_instruccion_fiscal) {
-                if (numero_investigacion_previa) {
-                    return res.status(404).send('No se encontró ninguna delegación con ese número de investigación previa');
-                }
-                if (numero_instruccion_fiscal) {
-                    return res.status(404).send('No se encontró ninguna delegación con ese número de instrucción fiscal');
-                }
-            }
+        // Verificar si se encontró un agente
+        if (!delegacionDetalle) {
+            return res.status(404).send( `Lo sentimos, no se encontró la delegación con el ID ${id}`);
         }
 
         // Si se encontró la delegación, enviarla como respuesta
-        res.status(200).json(delegacionEncontrada);
+        res.status(200).json(delegacionDetalle);
     } catch (error) {
         // Si hay algún error, envía una respuesta de error
         console.error('Error al obtener detalle de la delegación:', error);
@@ -158,89 +163,64 @@ export const detalleDelegacion = async (req, res) => {
 
 // Actualizar una delegacion
 export const actualizarDelegacion = async (req, res) => {
-    try {
-        const { numero_investigacion_previa, numero_instruccion_fiscal } = req.body; // Números de investigación previa e instrucción fiscal
-        const datosActualizados = req.body; // Datos actualizados de la delegación
-        
-        // Verificar si se proporcionó al menos uno de los números de investigación previa o instrucción fiscal
-        if (!numero_investigacion_previa && !numero_instruccion_fiscal) {
-            return res.status(400).send('Se requiere proporcionar al menos un número de investigación previa o un número de instrucción fiscal');
-        }
 
-        // Buscar la delegación por el número de investigación previa si se proporcionó
-        let delegacionExistente;
-        
-        if (numero_investigacion_previa) {
-            delegacionExistente = await prisma.delegacion.findFirst({
-                where: {
-                    numero_investigacion_previa: numero_investigacion_previa.toString()
-                }
-            });
-        }
+const { id } = req.params;
+const datosActualizadosDelegacion = req.body;
 
-        // Si no se encontró la delegación por el número de investigación previa, buscar por el número de instrucción fiscal
-        if (!delegacionExistente && numero_instruccion_fiscal) {
-            delegacionExistente = await prisma.delegacion.findFirst({
-                where: {
-                    numero_instruccion_fiscal: numero_instruccion_fiscal.toString()
-                }
-            });
-        }
+try {
+    
+    const delegacion = await prisma.delegacion.findUnique({
+        where: {
+            id: parseInt(id),
+        },
+    });
 
-        // Verificar si se encontró la delegación a actualizar
-        if (!delegacionExistente) {
-            return res.status(404).send('No se encontró la delegación a actualizar');
-        }
-
-        // Actualizar la delegación con los nuevos datos
-        const delegacionActualizada = await prisma.delegacion.update({
-            where: {
-                id: delegacionExistente.id
-            },
-            data: datosActualizados
-        });
-
-        // Enviar respuesta con la delegación actualizada
-        res.status(200).json(delegacionActualizada);
-    } catch (error) {
-        // Si hay algún error, envía una respuesta de error
-        console.error('Error al actualizar la delegación:', error);
-        res.status(500).send('Error al actualizar la delegación');
+    // Verificar si se encontró al usuario
+    if (!delegacion) {
+        return res.status(404).json({ msg: `Lo sentimos, no se encontró la delegacion con ID ${id}` });
     }
+
+    // Actualizar el la delegacion
+    await prisma.delegacion.update({
+        where: {
+            id: parseInt(id),
+        },
+        data: datosActualizadosDelegacion // Actualizar con los datos proporcionados en el cuerpo de la solicitud
+    });
+
+    res.status(200).json({ msg: "Perfil actualizado correctamente" });
+
+} catch (error) {
+    // Si hay algún error, envía una respuesta de error
+    console.error('Error al actualizar la delegación:', error);
+    res.status(500).send('Error al actualizar la delegación');
+}
 };
 
 // Eliminar una delegacion
 export const eliminarDelegacion = async (req, res) => {
     
-    const { numero_investigacion_previa, numero_instruccion_fiscal } = req.body; // Números de investigación previa e instrucción fiscal
+    const { id } = req.params;
 
     try {
-        // Verificar si se proporcionó al menos uno de los números de investigación previa o instrucción fiscal
-        if (!numero_investigacion_previa && !numero_instruccion_fiscal) {
-            return res.status(400).send('Se requiere proporcionar al menos un número de investigación previa o un número de instrucción fiscal');
-        }
 
-        // Eliminar la delegación que coincida con los números de investigación previa e instrucción fiscal proporcionados
-        const delegacionEliminada = await prisma.delegacion.deleteMany({
+        const delegacionEliminada = await prisma.delegacion.findUnique({
             where: {
-                OR: [
-                    {
-                        numero_investigacion_previa: numero_investigacion_previa ? numero_investigacion_previa.toString() : undefined
-                    },
-                    {
-                        numero_instruccion_fiscal: numero_instruccion_fiscal ? numero_instruccion_fiscal.toString() : undefined
-                    }
-                ]
-            }
+              id: Number(id),
+            },
         });
 
-        // Verificar si se eliminó alguna delegación
-        if (delegacionEliminada.count === 0) {
-            return res.status(404).send('No se encontró ninguna delegación con los números proporcionados');
+        if (!delegacionEliminada) {
+            return res.status(404).json({ msg: 'Usuario no encontrado' });
         }
 
-        // Enviar respuesta indicando que la delegación se eliminó correctamente
-        res.status(200).json({ msg: 'Delegación eliminada correctamente' });
+        await prisma.delegacion.delete({
+            where: {
+              id: Number(id),
+            },
+        });
+
+        res.status(200).json({ msg: 'Usuario eliminado correctamente', delegacion: delegacionEliminada });
     } catch (error) {
         // Si hay algún error, envía una respuesta de error
         console.error('Error al eliminar la delegación:', error);
