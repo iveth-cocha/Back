@@ -150,7 +150,7 @@ export const registro = async (req, res) => {
         nombre: nombre,
         email: email,
         password: passwordEncrypted,
-        Rol: rol,
+        Rol: Rol,
         agente: {
           connect: { Cedula: agenteID }
         },
