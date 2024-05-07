@@ -160,7 +160,6 @@ model Localidad {
 }
 
 model Ficalia{
-  id Int @id
-  provincia String @db.VarChar(255)
+  id Int @id @default(autoincrement())
   N_fiscalia String @db.VarChar(255)
 }

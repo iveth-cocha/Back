@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { registrarDelito,detalleDelito, actualizarDelito, eliminarDelito, listarDelitos, listarLocalizaciones} from '../controllers/delitosController.js';
+import { registrarDelito,detalleDelito, actualizarDelito, eliminarDelito, listarDelitos, listarLocalizaciones, listarFiscalias} from '../controllers/delitosController.js';
 import {checkRoleAuth} from '../middlewares/autenticacion.js'
 
 const router = Router();
@@ -20,7 +20,11 @@ router.delete('/eliminar/delito/:id', checkRoleAuth(['Administrador','Registrado
 router.get('/delitos', checkRoleAuth(['Administrador','Registrador']), listarDelitos);
 
 // Ruta para listar las localizaciones
-router.get('/localizaciones', checkRoleAuth(['Administrador', 'Registrador']), listarLocalizaciones);
+router.get('/localizaciones', listarLocalizaciones);
+
+// Ruta para listar las fiscalias
+router.get('/fiscalias', checkRoleAuth(['Administrador', 'Registrador']), listarFiscalias);
+
 
 
 export default router;
