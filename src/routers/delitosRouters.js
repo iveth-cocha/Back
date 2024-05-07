@@ -20,7 +20,7 @@ router.delete('/eliminar/delito/:id', checkRoleAuth(['Administrador','Registrado
 router.get('/delitos', checkRoleAuth(['Administrador','Registrador']), listarDelitos);
 
 // Ruta para listar las localizaciones
-router.get('/localizaciones', listarLocalizaciones);
+router.get('/localizaciones', checkRoleAuth(['Administrador', 'Registrador']), listarLocalizaciones);
 
 // Ruta para listar las fiscalias
 router.get('/fiscalias', checkRoleAuth(['Administrador', 'Registrador']), listarFiscalias);

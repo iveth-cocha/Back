@@ -13,21 +13,21 @@ router.post('/login', login);
 router.post('/solicitar-registro', solicitudRegistro);
 
 // Ruta para crear un nuevo usuario
-router.post('/registro', checkRoleAuth(['Administrador']), registro);
+router.post('/registro', registro);
 
 // Ruta para ver el detalle de un usuario
-router.get('/detalle/usuario/:id', checkRoleAuth(['Administrador', 'Registrador']), detalleUsuario );
+router.get('/detalle/usuario/:id', detalleUsuario );
 
-router.get('/perfil',checkRoleAuth(['Administrador', 'Registrador', 'Visualizador']), perfil);
+router.get('/perfil', perfil);
 
 // Ruta para actualizar un usuario
-router.put('/actualizar/usuario/:id', checkRoleAuth(['Administrador']), actualizarUsuario );
+router.put('/actualizar/usuario/:id', actualizarUsuario );
 
 // Ruta para eliminar un usuario
-router.delete('/eliminar/usuario/:id', checkRoleAuth(['Administrador']), eliminarUsuario);
+router.delete('/eliminar/usuario/:id', eliminarUsuario);
 
 // Ruta para listar los usuarios
-router.get('/usuarios', checkRoleAuth(['Administrador']), listarUsuarios);
+router.get('/usuarios',  listarUsuarios);
 
 // Ruta para confirmar email de un usuario
 router.get('/confirmar/:token', confirmEmail);
@@ -42,6 +42,6 @@ router.get('/recuperar-password/:token', comprobarTokenPasword);
 router.post('/nuevo-password/:token', nuevoPassword);
 
 // Ruta par actualizar obligatoriamente el password de un usuario
-router.put('/actualizar-contrasena/:id', actualizarContraseña);
+router.put('/actualizar-contrasena/:token', actualizarContraseña);
 
 export default router;

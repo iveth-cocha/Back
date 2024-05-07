@@ -111,9 +111,8 @@ export const sendMailToUser = async (email, token) => {
                             <header>UNIDAD NACIONAL DE CIBERDELITO</header>
                             <h3>Verificación de Correo y Contraseña</h3>
                             <p>Hola, se le ha registrado en el sistema de delegaciones de la Unidad Nacional de Ciberdelitos.</p>
-                            <p>Recuerda que tu contraseña temporal es: <strong>"Cédula_Cib3rp0l**"</strong>.</p>
-                            <p>Por ejemplo: <strong>"1717171717_Cib3rp0l**".</strong></p>
-                            <p style="text-align: center;"> Úsela para acceder a tu cuenta por primera vez.</p>
+                            <p>Cuando confirme su cuenta se le redirecionara para que actualice su contraseña</p>
+                            <p style="text-align: center;"> Haga click a continuación .</p>
                             <a href="${confirmationLink}" class="button">Confirmar cuenta</a>
                             <footer><img src="https://i.ibb.co/wyFDdcN/PNE.png"></footer>
                         </div>
