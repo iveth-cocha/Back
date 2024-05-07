@@ -362,7 +362,7 @@ export const confirmEmail = async (req, res) => {
           }
       });
 
-      res.status(200).json({ msg: "Token confirmado, ya puedes iniciar sesión" });
+      res.status(200).json({ msg: "Cuenta confirmana, es necesario que cree una contraseña" });
   } catch (error) {
       console.error("Error al confirmar el email del usuario:", error);
       res.status(500).json({ msg: "Ocurrió un error al confirmar el email del usuario" });
@@ -518,7 +518,7 @@ export const actualizarContraseña = async (req, res) => {
       },
     });
 
-    res.status(200).json({ msg: "Contraseña actualizada correctamente" });
+    res.status(200).json({ msg: "Contraseña creada correctamente" });
   } catch (error) {
     console.error('Error al actualizar la contraseña:', error);
     res.status(500).json({ msg: 'Ocurrió un error al actualizar la contraseña' });

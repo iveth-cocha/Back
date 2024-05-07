@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport({
 export const sendMailToUser = async (email, token) => {
     try {
         // Construir el enlace de confirmación con el token
-        const confirmationLink = `${process.env.URL_BACKEND}confirmar/${encodeURIComponent(token)}`;
+        const confirmationLink = `${process.env.URL_FRONTEND}confirmar/${token}`;
 
         const mailOptions = {
             from: process.env.USER_GMAIL,

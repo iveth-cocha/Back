@@ -13,7 +13,7 @@ router.post('/login', login);
 router.post('/solicitar-registro', solicitudRegistro);
 
 // Ruta para crear un nuevo usuario
-router.post('/registro', checkRoleAuth(['Administrador']), registro);
+router.post('/registro',checkRoleAuth(['Administrador']), registro);
 
 // Ruta para ver el detalle de un usuario
 router.get('/detalle/usuario/:id', checkRoleAuth(['Administrador', 'Registrador']), detalleUsuario );
