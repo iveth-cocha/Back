@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "RolEnum" AS ENUM ('Administrador', 'Visualizador', 'Regristrador');
+CREATE TYPE "RolEnum" AS ENUM ('Administrador', 'Visualizador', 'Registrador');
 
 -- CreateTable
 CREATE TABLE "Agente" (
@@ -46,6 +46,7 @@ CREATE TABLE "Usuario" (
     "agenteID" TEXT NOT NULL,
     "token" TEXT,
     "confirmEmail" BOOLEAN NOT NULL DEFAULT false,
+    "actualizarPassword" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Usuario_pkey" PRIMARY KEY ("id")
 );
@@ -70,7 +71,7 @@ CREATE TABLE "Delegacion" (
     "anio_ingreso" INTEGER,
     "orden" INTEGER,
     "mes_ingreso" TEXT,
-    "numero_investigacion_previa" VARCHAR(255),
+    "numero_investigacion_previa" INTEGER,
     "numero_instruccion_fiscal" VARCHAR(255),
     "zona" VARCHAR(255),
     "provincia" VARCHAR(255),
@@ -156,8 +157,7 @@ CREATE TABLE "Localidad" (
 
 -- CreateTable
 CREATE TABLE "Ficalia" (
-    "id" INTEGER NOT NULL,
-    "provincia" VARCHAR(255) NOT NULL,
+    "id" SERIAL NOT NULL,
     "N_fiscalia" VARCHAR(255) NOT NULL,
 
     CONSTRAINT "Ficalia_pkey" PRIMARY KEY ("id")
