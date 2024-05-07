@@ -327,48 +327,48 @@ export const listarUsuarios = async (req, res) => {
 };
 
 // Confirmar email de un usuario
-  export const confirmEmail = async (req, res) => {
-    try {
+export const confirmEmail = async (req, res) => {
+  try {
       // Verificar si el token está presente en los parámetros de la solicitud
       if (!req.params.token) {
-        return res.status(400).json({ msg: "Lo sentimos, no se puede validar la cuenta" });
+          return res.status(400).json({ msg: "Lo sentimos, no se puede validar la cuenta" });
       }
 
       // Buscar al usuario por el token en la base de datos
       const usuarioBDD = await prisma.usuario.findFirst({
-        where: {
-          token: req.params.token
-        }
+          where: {
+              token: req.params.token
+          }
       });
 
       // Verificar si el usuario no existe o si su token es nulo
       if (!usuarioBDD?.token) {
-        return res.status(404).json({ msg: "La cuenta ya ha sido confirmada" });
+          return res.status(404).json({ msg: "La cuenta ya ha sido confirmada" });
+      }
+
+      // Verificar si el email ya ha sido confirmado
+      if (usuarioBDD.confirmEmail) {
+          return res.status(400).json({ msg: "El token ya ha sido confirmado" });
       }
 
       // Actualizar el token y establecer confirmEmail en true
       const updatedUsuario = await prisma.usuario.update({
-        where: {
-          id: usuarioBDD.id
-        },
-        data: {
-          token: usuarioBDD.token,
-          confirmEmail: true
-        }
+          where: {
+              id: usuarioBDD.id
+          },
+          data: {
+              token: usuarioBDD.token,
+              confirmEmail: true
+          }
       });
 
-          // Verificar si es necesario actualizar la contraseña
-          if (!usuarioBDD.actualizarPassword) {
-            // Redirigir al usuario a una página para actualizar su contraseña
-            return res.status(200).json({ msg: "Es necesario actualizar su contraseña" });
-          }
-
       res.status(200).json({ msg: "Token confirmado, ya puedes iniciar sesión" });
-    } catch (error) {
+  } catch (error) {
       console.error("Error al confirmar el email del usuario:", error);
       res.status(500).json({ msg: "Ocurrió un error al confirmar el email del usuario" });
-    }
-  };
+  }
+};
+
 
 // Recuperar password de un usuario
 export const recuperarPassword = async (req, res) => {
