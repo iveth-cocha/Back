@@ -369,7 +369,6 @@ export const confirmEmail = async (req, res) => {
   }
 };
 
-
 // Recuperar password de un usuario
 export const recuperarPassword = async (req, res) => {
   const { email } = req.body;

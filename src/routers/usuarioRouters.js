@@ -18,6 +18,7 @@ router.post('/registro',checkRoleAuth(['Administrador']), registro);
 // Ruta para ver el detalle de un usuario
 router.get('/detalle/usuario/:id', checkRoleAuth(['Administrador', 'Registrador']), detalleUsuario );
 
+// Ruta para ver el perfil de un usuario
 router.get('/perfil',checkRoleAuth(['Administrador', 'Registrador', 'Visualizador']), perfil);
 
 // Ruta para actualizar un usuario
