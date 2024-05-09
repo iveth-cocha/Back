@@ -2,12 +2,13 @@
 import { Router } from 'express';
 import { login,solicitudRegistro, registro, detalleUsuario, perfil, actualizarUsuario, eliminarUsuario, listarUsuarios, confirmEmail, recuperarPassword, comprobarTokenPasword, nuevoPassword, actualizarContraseña} from '../controllers/usuarioController.js';
 import {checkRoleAuth} from '../middlewares/autenticacion.js'
+import {loginVU} from '../validation/usuariosvalidacion.js'
 
 //Crear rutas para cada perfil
 const router = Router();
 
 // Ruta para logear un usuario
-router.post('/login', login);
+router.post('/login', loginVU, login);
 
 // Ruta para solicitar un registro sin rol 
 router.post('/solicitar-registro', solicitudRegistro);

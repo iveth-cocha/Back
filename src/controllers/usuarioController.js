@@ -8,13 +8,10 @@ const prisma = new PrismaClient();
 
 //Login de un usuario
 export const login = async (req, res) => {
+
+  const { email, password } = req.body;
+
   try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ msg: "Lo sentimos, debes llenar todos los campos" });
-    }
-
     // Buscar al usuario por el correo electrónico en la base de datos
     const usuarioBDD = await prisma.usuario.findUnique({
       where: {
@@ -27,12 +24,12 @@ export const login = async (req, res) => {
 
     // Verificar si el usuario existe
     if (!usuarioBDD) {
-      return res.status(404).json({ msg: "Lo sentimos, el usuario no se encuentra registrado" });
+      return res.status(404).json({ msg: "Lo sentimos, el correo electrónico no se encuentra registrado." });
     }
 
     // Verificar si el correo electrónico del usuario está confirmado
     if (usuarioBDD.confirmEmail === false) {
-      return res.status(403).json({ msg: "Lo sentimos, debe verificar su cuenta" });
+      return res.status(403).json({ msg: "Lo sentimos, debe verificar su cuenta." });
     }
 
     // Verificar si la contraseña proporcionada coincide con la almacenada en la base de datos

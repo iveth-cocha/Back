@@ -27,10 +27,14 @@ export const registrarDelegacion = async (req, res) => {
             ordenInicial = ultimoOrden.orden + 1;
         }
         
+        //Validaciones
         const nuevoOrden = Math.max(ultimoOrden ? ultimoOrden.orden + 1 : 1, ordenInicial);
-        
-        // Validar que los números de investigación previa e instrucción fiscal no estén repetidos
+
         const { numero_investigacion_previa, numero_instruccion_fiscal } = datosDelegacion;
+
+        if (!numero_investigacion_previa && !numero_instruccion_fiscal) {
+            return res.status(404).json({ msg: "Debe proporcionar al menos un número de investigación previa o instrucción fiscal." });
+        }
 
         const delegacionExistentePorInvestigacionPrevia = await prisma.delegacion.findFirst({
             where: {
@@ -45,16 +49,16 @@ export const registrarDelegacion = async (req, res) => {
         });
 
         if (delegacionExistentePorInvestigacionPrevia) {
-            return res.status(400).json({ error: 'El número de investigación previa ya está registrado' });
+            return res.status(400).json({ msg: "El número de investigación previa ya está registrado" });
         }
 
         if (delegacionExistentePorInstruccionFiscal) {
-            return res.status(400).json({ error: 'El número de instrucción fiscal ya está registrado' });
+            return res.status(400).json({ msg: "El número de instrucción fiscal ya está registrado" });
         }
 
         // Verificar si los números de investigación previa e instrucción fiscal son iguales
         if (numero_investigacion_previa === numero_instruccion_fiscal) {
-            return res.status(400).json({ error: 'Los números de investigación previa e instrucción fiscal no pueden ser iguales' });
+            return res.status(400).json({ msg: "Los números de investigación previa e instrucción fiscal no pueden ser iguales" });
         }
 
         const nuevaDelegacion = await prisma.delegacion.create({

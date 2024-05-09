@@ -1,2 +1,3 @@
-import { check, validationResult } from 'express-validator'
+import { check } from 'express-validator'
+import {validacionResultado} from '../middlewares/validacionResultado.js'
 
