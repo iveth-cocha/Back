@@ -142,7 +142,7 @@ export const sendMailToUser = async (email, token) => {
 export const sendMailToResetPassword = async (email, token) => {
     try {
         // Construir el enlace de reestablecimiento de contraseña con el token
-        const resetPasswordLink = `${process.env.URL_BACKEND}recuperar-password/${token}`;
+        const resetPasswordLink =`${process.env.URL_FRONTEND}recuperar-password/${token}`;
 
         const mailOptions = {
             from: process.env.USER_GMAIL,

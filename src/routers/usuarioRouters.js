@@ -34,7 +34,7 @@ router.get('/usuarios', checkRoleAuth(['Administrador']),  listarUsuarios);
 router.get('/confirmar/:token', confirmEmail);
 
 // Ruta para recuperar el passowrd de un usuario
-router.get('/recuperar-password', recuperarPassword);
+router.post('/recuperar-password', recuperarPassword);
 
 // Ruta para verificar el token de un usuario
 router.get('/recuperar-password/:token', comprobarTokenPasword);
