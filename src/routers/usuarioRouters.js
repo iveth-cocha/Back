@@ -2,7 +2,7 @@
 import { Router } from 'express';
 import { login,solicitudRegistro, registro, detalleUsuario, perfil, actualizarUsuario, eliminarUsuario, listarUsuarios, confirmEmail, recuperarPassword, comprobarTokenPasword, nuevoPassword, actualizarContraseña} from '../controllers/usuarioController.js';
 import {checkRoleAuth} from '../middlewares/autenticacion.js'
-import {loginVU} from '../validation/usuariosvalidacion.js'
+import {loginVU, solicitudRegistroVU} from '../validation/usuariosvalidacion.js'
 
 //Crear rutas para cada perfil
 const router = Router();
@@ -11,7 +11,7 @@ const router = Router();
 router.post('/login', loginVU, login);
 
 // Ruta para solicitar un registro sin rol 
-router.post('/solicitar-registro', solicitudRegistro);
+router.post('/solicitar-registro', solicitudRegistroVU, solicitudRegistro);
 
 // Ruta para crear un nuevo usuario
 router.post('/registro',checkRoleAuth(['Administrador']), registro);

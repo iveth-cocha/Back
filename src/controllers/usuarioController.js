@@ -1,9 +1,8 @@
 import { encrypPassword,matchPassword, crearToken } from '../middlewares/bcrypt.js';
 import {sendMailToUser, sendMailToResetPassword, sendMailToAdmin}  from '../config/nodemailer.js'; 
 import {generarJWT, VDToken} from "../helpers/crearJWT.js"
-
-
 import { PrismaClient } from '@prisma/client';
+
 const prisma = new PrismaClient();
 
 //Login de un usuario
@@ -63,10 +62,6 @@ export const login = async (req, res) => {
 export const solicitudRegistro = async (req, res) => {
   const { cedula, nombre, email, mensaje } = req.body;
   try {
-    // Verifica si todos los campos están llenos
-    if (!cedula ||!nombre || !email || !mensaje ) {
-      return res.status(400).json({ msg: "Debes llenar todos los campos" });
-    }
     // Envía un correo electrónico al administrador para notificar la solicitud de registro
     await sendMailToAdmin(cedula, email, nombre, mensaje);
 
@@ -84,6 +79,16 @@ export const registro = async (req, res) => {
   const { agenteID, nombre, email, Rol } = req.body;
 
   try {
+    // Verificar si la cedula está registrada en la base de datos y pertenece a algún agente
+    const agenteExistente = await prisma.agente.findUnique({
+      where: {
+        Cedula: agenteID.toString()
+      }
+    });
+
+    if (!agenteExistente) {
+      return res.status(400).json({ msg: "El agente con la cédula proporcionada no existe" });
+    }
     // Verificar si todos los campos están llenos
     if (!nombre || !email || !Rol || !agenteID) {
       return res.status(400).json({ msg: "Lo sentimos, debes llenar todos los campos." });
@@ -106,22 +111,13 @@ export const registro = async (req, res) => {
       return res.status(400).json({ msg: "Rol inválido" });
     }
 
-    // Verificar si la cedula está registrada en la base de datos y pertenece a algún agente
-    const agenteExistente = await prisma.agente.findUnique({
-      where: {
-        Cedula: agenteID.toString()
-      }
-    });
-    if (!agenteExistente) {
-      return res.status(400).json({ msg: "El agente con la cédula proporcionada no existe" });
-    }
-
     // Verificar si el agente ya tiene un usuario registrado
     const usuarioExistente = await prisma.usuario.findFirst({
       where: {
         agenteID: agenteExistente.Cedula
       }
     });
+
     if (usuarioExistente) {
       return res.status(400).json({ msg: "El agente ya tiene un usuario registrado" });
     }
