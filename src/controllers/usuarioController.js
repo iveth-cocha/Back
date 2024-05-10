@@ -87,11 +87,17 @@ export const registro = async (req, res) => {
     });
 
     if (!agenteExistente) {
-      return res.status(400).json({ msg: "El agente con la cédula proporcionada no existe" });
+      return res.status(400).json({ msg: "El agente con la cédula proporcionada no existe o el nombre del agente no se encuentra registrado" });
     }
+
     // Verificar si todos los campos están llenos
-    if (!nombre || !email || !Rol || !agenteID) {
+    if (!nombre || !email || !agenteID) {
       return res.status(400).json({ msg: "Lo sentimos, debes llenar todos los campos." });
+    }
+
+    // Verificar si el rol seleccionado es válido
+    if (!Rol) {
+      return res.status(400).json({ msg: "Por favor selecione un rol" });
     }
 
     // Verificar si el email ya está registrado
@@ -105,12 +111,6 @@ export const registro = async (req, res) => {
       return res.status(400).json({ msg: "Lo sentimos, el email ya se encuentra registrado" });
     }
 
-    // Verificar si el rol seleccionado es válido
-    const rolesValidos = ['Administrador', 'Visualizador', 'Registrador'];
-    if (!rolesValidos.includes(Rol)) {
-      return res.status(400).json({ msg: "Rol inválido" });
-    }
-
     // Verificar si el agente ya tiene un usuario registrado
     const usuarioExistente = await prisma.usuario.findFirst({
       where: {
@@ -122,7 +122,6 @@ export const registro = async (req, res) => {
       return res.status(400).json({ msg: "El agente ya tiene un usuario registrado" });
     }
 
-    // Generar la contraseña con el ID del agente seguido de "_Cib3rp0l**"
     const password = `${agenteExistente.Cedula}_Cib3rp0l**Ññ`;
 
     // Encriptar el password
@@ -149,7 +148,7 @@ export const registro = async (req, res) => {
     // Enviar correo electrónico de confirmación
     await sendMailToUser(email, token);
 
-return res.status(200).json({ msg: "Revisa tu correo electrónico para confirmar tu cuenta" });
+    return res.status(200).json({ msg: "Revisa tu correo electrónico para confirmar tu cuenta" });
   } catch (error) {
     console.error("Error al crear el nuevo usuario:", error);
     res.status(500).json({ msg: "Ocurrió un error al crear el nuevo usuario" });
