@@ -3,7 +3,7 @@ import { validacionResultado } from '../middlewares/validacionResultado.js'
 
 export const loginVU = [
     check('email')
-        .exists().withMessage(msg,'El correo electrónico es obligatorio')
+        .exists().withMessage('El correo electrónico es obligatorio')
         .notEmpty().withMessage('El correo electrónico no puede estar vacío')
         .custom(value => {
             // Verificar si el correo electrónico tiene el formato correcto usando una expresión regular
