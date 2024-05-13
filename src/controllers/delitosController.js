@@ -3,20 +3,33 @@ const prisma = new PrismaClient();
 
 // Registro un nuevo delito
 export const registrarDelito = async (req, res) => {
+  const delitoNuevo = req.body;
 
-  const delitosNuevos = req.body; // Suponiendo que recibes todos los datos necesarios para crear un delito en req.body
+  try {
+      // Verificar si ya existe un delito con el mismo nombre y sección
+      const delitoExistente = await prisma.delito.findFirst({
+          where: {
+              delito: delitoNuevo.delito,
+              seccion: delitoNuevo.seccion
+          }
+      });
 
-    try {
+      if (delitoExistente) {
+          return res.status(400).json({ mensaje: "Este delito ya está registrado" });
+      }
+
+      // Si no existe, crear un nuevo delito
       const nuevoDelito = await prisma.delito.create({
-        data: delitosNuevos
-      })
-      res.status(200).json({ mensaje: 'Agente agregado correctamente', delito: nuevoDelito });
-    } catch (error) {
-      // Si hay algún error, envía una respuesta de error
+          data: delitoNuevo
+      });
+
+      res.status(200).json({ mensaje: 'Delito agregado correctamente', delito: nuevoDelito });
+  } catch (error) {
       console.error('Error al registrar delito:', error);
       res.status(500).send('Error al registrar delito');
-    }
+  }
 };
+
 
 // Detalle de un delito
 export const detalleDelito = async (req, res) => {

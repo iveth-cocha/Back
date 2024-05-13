@@ -107,7 +107,7 @@ export const registro = async (req, res) => {
       },
     });
     
-    if (verificarEmailBDD) {
+    if (!verificarEmailBDD) {
       return res.status(400).json({ msg: "Lo sentimos, el email ya se encuentra registrado" });
     }
 
@@ -118,7 +118,7 @@ export const registro = async (req, res) => {
       }
     });
 
-    if (usuarioExistente) {
+    if (!usuarioExistente) {
       return res.status(400).json({ msg: "El agente ya tiene un usuario registrado" });
     }
 
@@ -246,8 +246,8 @@ export const actualizarUsuario = async (req, res) => {
     });
 
     // Si se encontró un usuario con el mismo correo, devolver un mensaje de error
-    if (correoExistente) {
-      return res.status(400).json({ error: 'El correo proporcionado ya está en uso por otro usuario' });
+    if (!correoExistente) {
+      return res.status(400).json({ msg: 'El correo proporcionado ya está en uso por otro usuario' });
     }
 
     // Busca al usuario por su id

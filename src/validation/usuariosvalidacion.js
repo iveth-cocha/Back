@@ -60,16 +60,3 @@ export const solicitudRegistroVU = [
         validacionResultado(req, res, next)
     }
 ];
-
-export const X = [
-
-];
-export const Y = [
-
-];
-export const Zz = [
-
-];
-export const Z = [
-
-];
