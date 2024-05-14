@@ -130,7 +130,7 @@ export const registrarDelegacion = async (req, res) => {
         });
         
         // Envía una respuesta indicando que se ha creado la delegación con éxito
-        res.status(200).json({ mensaje: 'Delegación agregada correctamente', delegacion: nuevaDelegacion });
+        res.status(200).json({ msg: 'Delegación agregada correctamente', delegacion: nuevaDelegacion });
     } catch (error) {
         // Si hay algún error, envía una respuesta de error
         console.error('Error al registrar la delegación:', error);
@@ -154,7 +154,7 @@ export const detalleDelegacion = async (req, res) => {
 
         // Verificar si se encontró un agente
         if (!delegacionDetalle) {
-            return res.status(404).send( `Lo sentimos, no se encontró la delegación con el ID ${id}`);
+            res.status(200).json( {msg: `Lo sentimos, no se encontró la delegación con el ID ${id}`});
         }
 
         // Si se encontró la delegación, enviarla como respuesta
@@ -193,7 +193,7 @@ try {
         data: datosActualizadosDelegacion // Actualizar con los datos proporcionados en el cuerpo de la solicitud
     });
 
-    res.status(200).json({ msg: "Perfil actualizado correctamente" });
+    res.status(200).json({ msg: "Delegación actualizada correctamente" });
 
 } catch (error) {
     // Si hay algún error, envía una respuesta de error
@@ -216,7 +216,7 @@ export const eliminarDelegacion = async (req, res) => {
         });
 
         if (!delegacionEliminada) {
-            return res.status(404).json({ msg: 'Usuario no encontrado' });
+            return res.status(404).json({ msg: 'Delegacion no encontrada' });
         }
 
         await prisma.delegacion.delete({
@@ -225,7 +225,7 @@ export const eliminarDelegacion = async (req, res) => {
             },
         });
 
-        res.status(200).json({ msg: 'Usuario eliminado correctamente', delegacion: delegacionEliminada });
+        res.status(200).json({ msg: 'Delegacion eliminada correctamente', delegacion: delegacionEliminada });
     } catch (error) {
         // Si hay algún error, envía una respuesta de error
         console.error('Error al eliminar la delegación:', error);

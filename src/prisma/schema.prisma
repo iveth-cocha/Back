@@ -26,7 +26,7 @@ model Agente {
   Licencia String?   @db.VarChar(255) 
   Residencia String?   @db.VarChar(255) 
   Estado_Civil String?   @db.VarChar(255) 
-  FechaNacimiento DateTime
+  FechaNacimiento String
   Genero String?   @db.VarChar(255) 
   Telefono String?   @db.VarChar(255)
   Email String?   @db.VarChar(255) 
@@ -92,7 +92,7 @@ model Delegacion {
   tipo_delito                                String?    @db.VarChar(255)
   delito_tipificado_delegacion               String?    @db.VarChar(255)
   delito_desagregacion_policia_judicial      String?    @db.VarChar(255)
-  fecha_infraccion_delito                    DateTime?
+  fecha_infraccion_delito                    String?    @db.VarChar(255)
   apellidos_nombres_victima                  String?    @db.VarChar(255)
   sexo_victima                               String?    @db.VarChar(255)
   edad_victima                               Int?
@@ -103,16 +103,16 @@ model Delegacion {
   placa_vehiculo_involucrado                 String?    @db.VarChar(255)
   apellidos_nombres_fiscal                   String?    @db.VarChar(255)
   unidad_especializada                       String?    @db.VarChar(255)
-  fecha_delegacion                           DateTime?
-  fecha_recepcion_pj                         DateTime?
-  fecha_recepcion_agente_investigador        DateTime?
+  fecha_delegacion                           String?    @db.VarChar(255)
+  fecha_recepcion_pj                         String?    @db.VarChar(255)
+  fecha_recepcion_agente_investigador        String?    @db.VarChar(255)
   no_oficio_recibe_diligencia                String?    @db.VarChar(255)
   plazo_otorgado_dias                        Int?    
   numero_articulo                            String?    @db.VarChar(255)
   articulos_cumplidos                        String?    @db.VarChar(255)
   cumplimiento_parcial                       String?    @db.VarChar(255)
   cumplimiento_total                         String?    @db.VarChar(255)
-  fecha_cumplimiento                         DateTime?
+  fecha_cumplimiento                         String?    @db.VarChar(255)
   en_investigacion                           String?    @db.VarChar(255)
   numero_oficio_descargo                     String?    @db.VarChar(255)
   versiones                                  Int?

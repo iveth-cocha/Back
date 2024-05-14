@@ -15,7 +15,7 @@ export const registrarDelito = async (req, res) => {
       });
 
       if (delitoExistente) {
-          return res.status(400).json({ mensaje: "Este delito ya está registrado" });
+          return res.status(400).json({ msg: "Este delito ya se encuentra registrado" });
       }
 
       // Si no existe, crear un nuevo delito
@@ -23,7 +23,7 @@ export const registrarDelito = async (req, res) => {
           data: delitoNuevo
       });
 
-      res.status(200).json({ mensaje: 'Delito agregado correctamente', delito: nuevoDelito });
+      res.status(200).json({ msg: 'Delito agregado correctamente', delito: nuevoDelito });
   } catch (error) {
       console.error('Error al registrar delito:', error);
       res.status(500).send('Error al registrar delito');
@@ -45,7 +45,7 @@ export const detalleDelito = async (req, res) => {
     });
 
     if (!delitoDetalle) {
-      return res.status(404).send(`Lo sentimos, no se encontró el delito con el id: ${id}`);
+      return res.status(200).json({msg: `Lo sentimos, no se encontró el delito con el id: ${id}`})
     }
     
     res.status(200).send(delitoDetalle);

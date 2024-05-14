@@ -17,20 +17,10 @@ export const registrarAgente = async (req, res) => {
     });
 
     if (agenteExistente) {
-      return res.status(400).json({ error: 'La cédula ya está registrada' });
+      return res.status(400).json({ msg: 'La cédula ya está registrada' });
     }
 
-    // Concatenar la hora 00:00:00 a la fecha de nacimiento
-    if (agentesNuevos.FechaNacimiento) {
-      agentesNuevos.FechaNacimiento += ' 00:00:00';
-    }
-
-    //Una vez validado se crea el nuevo agente
-
-    const nuevoAgente = await prisma.agente.create({
-      data: agentesNuevos 
-    })
-    res.status(200).json({ mensaje: 'Agente agregado correctamente', agente: nuevoAgente });
+    res.status(200).json({ msg: 'Agente agregado correctamente', agente: nuevoAgente });
   } catch (error) {
     // Si hay algún error, envía una respuesta de error
     console.error('Error al registrar al agente:', error);
@@ -53,7 +43,7 @@ export const detalleAgente = async (req, res) => {
 
     // Verificar si se encontró un agente
     if (!agenteDetalle) {
-      return res.status(404).send( `Lo sentimos, no se encontró el agente con la cédula ${cedula}`);
+      res.status(200).json({ msg:`Lo sentimos, no se encontró el agente con la cédula ${cedula}`});
     }
     // Si se encontró un agente, enviarlo en la respuesta
     res.status(200).send(agenteDetalle);
@@ -112,7 +102,7 @@ export const eliminarAgente = async (req, res) => {
     });
 
     if (!agenteEliminado){
-      return res.status(404).send('Agente no encontrado');
+      res.status(200).json({msg: 'Agente no encontrado'});
     }
 
     await prisma.agente.delete({
@@ -121,7 +111,7 @@ export const eliminarAgente = async (req, res) => {
       }
     });
 
-    res.status(200).json({ mensaje: 'Agente eliminado correctamente', agente: agenteEliminado });
+    res.status(200).json({ msg: 'Agente eliminado correctamente', agente: agenteEliminado });
   } catch (error) {
       console.error('Error, al eliminar un agente:', error);
       res.status(500).send('Error, al eliminar un agente');
