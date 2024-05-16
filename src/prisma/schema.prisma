@@ -9,6 +9,7 @@ datasource db {
 
 //Modelo Agente
 model Agente {
+  ORD            Int?      @default(autoincrement())
   Direcion_Unidad  String?   @db.VarChar(255)
   Grado            String?   @db.VarChar(255)
   Apellido_Nombre  String?   @db.VarChar(255) 
@@ -43,6 +44,7 @@ model Agente {
 
 //Modelo Usuario
 model Usuario {
+  Orden            Int?      @default(autoincrement())
   id         Int       @id @default(autoincrement())
   Grado            String?   @db.VarChar(255)
   nombre     String    @db.VarChar(255)
@@ -63,6 +65,7 @@ enum RolEnum {
 
 //Modelo Mapeo
 model Mapeo {
+  Orden            Int?      @default(autoincrement())
   id              Int       @id @default(autoincrement())
   agente          Agente    @relation(fields: [agenteID], references: [Cedula])
   agenteID        String
@@ -70,7 +73,8 @@ model Mapeo {
   nombreAgente    String    @map(name: "Apellido_Nombre") @db.VarChar(255) // Campo para almacenar el nombre del agente
   grado           String    @map(name: "Grado") @db.VarChar(255) // Campo para almacenar el grado del agente
   Rol             RolEnum
-  fechaHora       DateTime  @default(now())
+  fechaHoraE      DateTime  @default(now())
+  fechaHoraS      DateTime  @default(now())
   accionRealizada String    @db.VarChar(255)
 }
 

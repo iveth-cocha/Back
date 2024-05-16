@@ -8,8 +8,6 @@ export const registrarAgente = async (req, res) => {
 
   try {
 
-    //Valida que la cedula (PK) no se repita
-
     const agenteExistente = await prisma.agente.findUnique({
       where: {
         Cedula: agentesNuevos.Cedula
@@ -20,7 +18,31 @@ export const registrarAgente = async (req, res) => {
       return res.status(400).json({ msg: 'La cédula ya está registrada' });
     }
 
-    res.status(200).json({ msg: 'Agente agregado correctamente', agente: nuevoAgente });
+    // Consultar el último valor de ORD en la tabla de agentes
+    const ultimoAgente = await prisma.agente.findFirst({
+      orderBy: { ORD: 'desc' }
+    });
+
+    let nuevoORD;
+
+    // Si no hay ningún agente registrado, asignar 1 como ORD
+    if (!ultimoAgente) {
+      nuevoORD = 1;
+    } else {
+      nuevoORD = ultimoAgente.ORD + 1;
+    }
+
+    // Agregar el nuevo agente con el nuevo valor de ORD
+    const nuevoAgente = await prisma.agente.create({
+      data: {
+        ...agentesNuevos,
+        ORD: nuevoORD
+      }
+    });
+
+
+
+    res.status(200).json({ msg: 'Agente agregado correctamente', agente: nuevoAgente  });
   } catch (error) {
     // Si hay algún error, envía una respuesta de error
     console.error('Error al registrar al agente:', error);

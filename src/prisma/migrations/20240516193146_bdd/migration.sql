@@ -3,6 +3,7 @@ CREATE TYPE "RolEnum" AS ENUM ('Administrador', 'Visualizador', 'Registrador');
 
 -- CreateTable
 CREATE TABLE "Agente" (
+    "ORD" SERIAL,
     "Direcion_Unidad" VARCHAR(255),
     "Grado" VARCHAR(255),
     "Apellido_Nombre" VARCHAR(255),
@@ -20,7 +21,7 @@ CREATE TABLE "Agente" (
     "Licencia" VARCHAR(255),
     "Residencia" VARCHAR(255),
     "Estado_Civil" VARCHAR(255),
-    "FechaNacimiento" TIMESTAMP(3) NOT NULL,
+    "FechaNacimiento" TEXT NOT NULL,
     "Genero" VARCHAR(255),
     "Telefono" VARCHAR(255),
     "Email" VARCHAR(255),
@@ -37,6 +38,7 @@ CREATE TABLE "Agente" (
 
 -- CreateTable
 CREATE TABLE "Usuario" (
+    "Orden" SERIAL,
     "id" SERIAL NOT NULL,
     "Grado" VARCHAR(255),
     "nombre" VARCHAR(255) NOT NULL,
@@ -46,20 +48,21 @@ CREATE TABLE "Usuario" (
     "agenteID" TEXT NOT NULL,
     "token" TEXT,
     "confirmEmail" BOOLEAN NOT NULL DEFAULT false,
-    "actualizarPassword" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Usuario_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Mapeo" (
+    "Orden" SERIAL,
     "id" SERIAL NOT NULL,
     "agenteID" TEXT NOT NULL,
     "Cedula" TEXT NOT NULL,
     "Apellido_Nombre" VARCHAR(255) NOT NULL,
     "Grado" VARCHAR(255) NOT NULL,
     "Rol" "RolEnum" NOT NULL,
-    "fechaHora" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "fechaHoraE" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "fechaHoraS" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "accionRealizada" VARCHAR(255) NOT NULL,
 
     CONSTRAINT "Mapeo_pkey" PRIMARY KEY ("id")
@@ -83,7 +86,7 @@ CREATE TABLE "Delegacion" (
     "tipo_delito" VARCHAR(255),
     "delito_tipificado_delegacion" VARCHAR(255),
     "delito_desagregacion_policia_judicial" VARCHAR(255),
-    "fecha_infraccion_delito" TIMESTAMP(3),
+    "fecha_infraccion_delito" VARCHAR(255),
     "apellidos_nombres_victima" VARCHAR(255),
     "sexo_victima" VARCHAR(255),
     "edad_victima" INTEGER,
@@ -94,16 +97,16 @@ CREATE TABLE "Delegacion" (
     "placa_vehiculo_involucrado" VARCHAR(255),
     "apellidos_nombres_fiscal" VARCHAR(255),
     "unidad_especializada" VARCHAR(255),
-    "fecha_delegacion" TIMESTAMP(3),
-    "fecha_recepcion_pj" TIMESTAMP(3),
-    "fecha_recepcion_agente_investigador" TIMESTAMP(3),
+    "fecha_delegacion" VARCHAR(255),
+    "fecha_recepcion_pj" VARCHAR(255),
+    "fecha_recepcion_agente_investigador" VARCHAR(255),
     "no_oficio_recibe_diligencia" VARCHAR(255),
     "plazo_otorgado_dias" INTEGER,
     "numero_articulo" VARCHAR(255),
     "articulos_cumplidos" VARCHAR(255),
     "cumplimiento_parcial" VARCHAR(255),
     "cumplimiento_total" VARCHAR(255),
-    "fecha_cumplimiento" TIMESTAMP(3),
+    "fecha_cumplimiento" VARCHAR(255),
     "en_investigacion" VARCHAR(255),
     "numero_oficio_descargo" VARCHAR(255),
     "versiones" INTEGER,

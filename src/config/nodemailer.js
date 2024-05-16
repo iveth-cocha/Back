@@ -19,7 +19,9 @@ const transporter = nodemailer.createTransport({
 export const sendMailToUser = async (email, token) => {
     try {
         // Construir el enlace de confirmación con el token
-        const confirmationLink = `${process.env.URL_FRONTEND}confirmar/${token}`;
+        const confirmationLink = `${process.env.URL_BACKEND}confirmar/${encodeURIComponent(token)}`;
+
+        //const confirmationLink = `${process.env.URL_FRONTEND}confirmar/${token}`;
 
         const mailOptions = {
             from: process.env.USER_GMAIL,
@@ -142,7 +144,10 @@ export const sendMailToUser = async (email, token) => {
 export const sendMailToResetPassword = async (email, token) => {
     try {
         // Construir el enlace de reestablecimiento de contraseña con el token
-        const resetPasswordLink =`${process.env.URL_FRONTEND}recuperar-password/${token}`;
+
+        const resetPasswordLink = `${process.env.URL_BACKEND}recuperar-password/${encodeURIComponent(token)}`;
+
+        //const resetPasswordLink =`${process.env.URL_FRONTEND}recuperar-password/${token}`;
 
         const mailOptions = {
             from: process.env.USER_GMAIL,

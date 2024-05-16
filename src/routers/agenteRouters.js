@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import { registrarAgente, detalleAgente, actualizarAgente, eliminarAgente,listarAgentes} from '../controllers/agentesController.js';
 import {checkRoleAuth} from '../middlewares/autenticacion.js'
+import {RegistroAGV} from '../validation/agentesvalidacion.js'
 
 const router = Router();
 
 // Ruta para crear un nuevo usuario
-router.post('/registro/agente', checkRoleAuth(['Administrador', 'Registrador']),  registrarAgente);
+router.post('/registro/agente', checkRoleAuth(['Administrador', 'Registrador']), RegistroAGV, registrarAgente);
 
 // Ruta para ver el detalle de un usuario
 router.get('/detalle/agente/:cedula', checkRoleAuth(['Administrador', 'Registrador']),  detalleAgente );

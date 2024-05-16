@@ -107,7 +107,7 @@ export const registro = async (req, res) => {
       },
     });
     
-    if (!verificarEmailBDD) {
+    if (verificarEmailBDD) {
       return res.status(400).json({ msg: "Lo sentimos, el email ya se encuentra registrado" });
     }
 
@@ -118,7 +118,7 @@ export const registro = async (req, res) => {
       }
     });
 
-    if (!usuarioExistente) {
+    if (usuarioExistente) {
       return res.status(400).json({ msg: "El agente ya tiene un usuario registrado" });
     }
 
