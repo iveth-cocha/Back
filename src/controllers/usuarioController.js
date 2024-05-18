@@ -170,6 +170,7 @@ export const detalleUsuario = async (req, res) => {
         nombre: true,
         email: true,
         Rol: true,
+        agenteID:true,
         agente: {
           select: {
             Cedula: true,
