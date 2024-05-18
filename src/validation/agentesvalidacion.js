@@ -1,6 +1,5 @@
 import { body, check } from 'express-validator'
 import {validacionResultado} from '../middlewares/validacionResultado.js'
-import { params } from 'superagent/lib/utils.js';
 
 export const RegistroAGV = [
     body('Direcion_Unidad')
