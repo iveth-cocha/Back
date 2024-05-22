@@ -244,12 +244,7 @@ export const actualizarUsuario = async (req, res) => {
           id: parseInt(id) // Excluir al usuario actual de la búsqueda
         }
       }
-    });
-
-    // Si se encontró un usuario con el mismo correo, devolver un mensaje de error
-    if (!correoExistente) {
-      return res.status(400).json({ msg: 'El correo proporcionado ya está en uso por otro usuario' });
-    }
+    });  //Se elimino la validacion de email por redundancia 
 
     // Busca al usuario por su id
     const usuario = await prisma.usuario.findUnique({

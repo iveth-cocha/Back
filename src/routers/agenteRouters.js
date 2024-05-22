@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { registrarAgente, detalleAgente, actualizarAgente, eliminarAgente,listarAgentes} from '../controllers/agentesController.js';
 import {checkRoleAuth} from '../middlewares/autenticacion.js'
-import {RegistroAGV} from '../validation/agentesvalidacion.js'
+import {RegistroAGV, ActualizarAGV} from '../validation/agentesvalidacion.js'
 
 const router = Router();
 
@@ -12,7 +12,7 @@ router.post('/registro/agente', checkRoleAuth(['Administrador', 'Registrador']),
 router.get('/detalle/agente/:cedula', checkRoleAuth(['Administrador', 'Registrador']),  detalleAgente );
 
 // Definición de la ruta para actualizar un agente por su cédula
-router.put('/actualizar/agente/:cedula', checkRoleAuth(['Administrador', 'Registrador']), actualizarAgente);
+router.put('/actualizar/agente/:cedula', checkRoleAuth(['Administrador', 'Registrador']), ActualizarAGV, actualizarAgente);
 
 // Ruta para eliminar un usuario
 router.delete('/eliminar/agente/:cedula', checkRoleAuth(['Administrador', 'Registrador']), eliminarAgente);
