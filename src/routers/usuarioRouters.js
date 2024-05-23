@@ -2,7 +2,7 @@
 import { Router } from 'express';
 import { login,solicitudRegistro, registro, detalleUsuario, perfil, actualizarUsuario, eliminarUsuario, listarUsuarios, confirmEmail, recuperarPassword, comprobarTokenPasword, nuevoPassword, actualizarContraseña} from '../controllers/usuarioController.js';
 import {checkRoleAuth} from '../middlewares/autenticacion.js'
-import {loginVU, solicitudRegistroVU} from '../validation/usuariosvalidacion.js'
+import {loginVU, solicitudRegistroVU, contraseñaVU, passwordCorreoRVU, contraseñaNuevaVU} from '../validation/usuariosvalidacion.js'
 
 //Crear rutas para cada perfil
 const router = Router();
@@ -35,15 +35,15 @@ router.get('/usuarios', checkRoleAuth(['Administrador']),  listarUsuarios);
 router.get('/confirmar/:token', confirmEmail);
 
 // Ruta para recuperar el passowrd de un usuario
-router.post('/recuperar-password', recuperarPassword);
+router.post('/recuperar-password',passwordCorreoRVU, recuperarPassword);
 
 // Ruta para verificar el token de un usuario
 router.get('/recuperar-password/:token', comprobarTokenPasword);
 
 // Ruta para crear un nuevo password de un usuario
-router.post('/nuevo-password/:token', nuevoPassword);
+router.post('/nuevo-password/:token', contraseñaNuevaVU, nuevoPassword);
 
 // Ruta par actualizar obligatoriamente el password de un usuario
-router.put('/actualizar-contrasena/:token', actualizarContraseña);
+router.put('/actualizar-contrasena/:token', contraseñaVU, actualizarContraseña);
 
 export default router;

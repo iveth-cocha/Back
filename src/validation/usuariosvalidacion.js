@@ -60,3 +60,49 @@ export const solicitudRegistroVU = [
         validacionResultado(req, res, next)
     }
 ];
+
+export const contraseñaVU = [
+    check('newPassword')
+        .exists().withMessage('La contraseña es obligatoria')
+        .notEmpty().withMessage('La contraseña no puede estar vacía')      
+        .isLength({ min: 10, max: 20 }).withMessage('La contraseña debe contener al menos 10 caracteres')
+        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*).*$/)
+        .withMessage('La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un número y un carácter especial')
+        .customSanitizer(value => value?.trim()),
+  
+    (req, res, next) => {
+      validacionResultado(req, res, next)
+    }
+];
+
+export const passwordCorreoRVU = [
+    check('email')  
+    .exists().withMessage('El correo electrónico es obligatorio')
+    .notEmpty().withMessage('El correo electrónico no puede estar vacío')     
+    .custom(value => {
+        // Verificar si el correo electrónico tiene el formato correcto usando una expresión regular
+        if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,})+$/.test(value)) {
+            throw new Error('El correo electrónico no es una dirección de correo electrónico válida');
+        }
+        return true;
+    })
+    .customSanitizer(value => value?.trim()),
+  
+    (req, res, next) => {
+      validacionResultado(req, res, next)
+    }
+];
+
+export const contraseñaNuevaVU = [
+    check('password')
+        .exists().withMessage('La contraseña es obligatoria')
+        .notEmpty().withMessage('La contraseña no puede estar vacía')      
+        .isLength({ min: 10, max: 20 }).withMessage('La contraseña debe contener al menos 10 caracteres')
+        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*).*$/)
+        .withMessage('La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un número y un carácter especial')
+        .customSanitizer(value => value?.trim()),
+  
+    (req, res, next) => {
+      validacionResultado(req, res, next)
+    }
+];

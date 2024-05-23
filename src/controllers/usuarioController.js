@@ -362,11 +362,6 @@ export const recuperarPassword = async (req, res) => {
   const { email } = req.body;
 
   try {
-    // Verificar si todos los campos están llenos
-    if (!email) {
-      return res.status(400).json({ msg: "Lo sentimos, debes llenar todos los campos" });
-    }
-
     // Buscar al usuario por el correo electrónico en la base de datos
     const usuarioBDD = await prisma.usuario.findUnique({
       where: {
@@ -431,11 +426,6 @@ export const nuevoPassword = async (req, res) => {
   const { token } = req.params;
 
   try {
-    // Verificar si se proporcionan todas las contraseñas
-    if (!password || !confirmpassword) {
-      return res.status(400).json({ msg: "Lo sentimos, debes llenar todos los campos" });
-    }
-
     // Verificar si las contraseñas coinciden
     if (password !== confirmpassword) {
       return res.status(400).json({ msg: "Lo sentimos, las contraseñas no coinciden" });
@@ -478,7 +468,7 @@ export const actualizarContraseña = async (req, res) => {
 
   try {
     if (!newPassword || !confirmPassword || newPassword !== confirmPassword) {
-      return res.status(400).json({ msg: "Las contraseñas no coinciden o están vacías" });
+      return res.status(400).json({ msg: "Las contraseñas no coinciden" });
     }
 
     // Buscar al usuario por su token en la base de datos
