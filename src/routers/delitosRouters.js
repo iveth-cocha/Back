@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import { registrarDelito,detalleDelito, actualizarDelito, eliminarDelito, listarDelitos, listarLocalizaciones, listarFiscalias} from '../controllers/delitosController.js';
 import {checkRoleAuth} from '../middlewares/autenticacion.js'
+import {RegistroVD} from '../validation/delitosvalidacion.js'
 
 const router = Router();
 
 // Ruta para crear un nuevo usuario
-router.post('/registro/delito', checkRoleAuth(['Administrador','Registrador']),  registrarDelito);
+router.post('/registro/delito', checkRoleAuth(['Administrador','Registrador']), RegistroVD, registrarDelito);
 
 // Ruta para ver el detalle de un usuario
 router.get('/detalle/delito/:id', checkRoleAuth(['Administrador','Registrador']),   detalleDelito );
