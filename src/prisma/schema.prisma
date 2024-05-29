@@ -84,7 +84,7 @@ model Delegacion {
   anio_ingreso                               Int?
   orden                                      Int?
   mes_ingreso                                String?
-  numero_investigacion_previa                Int?
+  numero_investigacion_previa                BigInt?
   numero_instruccion_fiscal                  String?    @db.VarChar(255)
   zona                                       String?    @db.VarChar(255)
   provincia                                  String?    @db.VarChar(255)

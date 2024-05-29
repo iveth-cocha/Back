@@ -4,6 +4,12 @@ const prisma = new PrismaClient();
 // Registro una nueva delegación
 export const registrarDelegacion = async (req, res) => {
 
+    function bigIntToString(obj) {
+        return JSON.parse(JSON.stringify(obj, (key, value) =>
+            typeof value === 'bigint' ? value.toString() : value
+        ));
+    }
+
     const datosDelegacion = req.body;
 
     try {  
@@ -34,31 +40,28 @@ export const registrarDelegacion = async (req, res) => {
             return res.status(400).json({ msg: "Los números de investigación previa e instrucción fiscal no pueden ser iguales" });
         }
 
-        // Si alguno de los campos está presente, realizar las validaciones
-        if (numero_investigacion_previa || numero_instruccion_fiscal) {
-
-            if (numero_investigacion_previa) {
-                const delegacionExistentePorInvestigacionPrevia = await prisma.delegacion.findFirst({
-                    where: {
-                        numero_investigacion_previa: numero_investigacion_previa
-                    }
-                });
-
-                if (delegacionExistentePorInvestigacionPrevia) {
-                    return res.status(400).json({ msg: "El número de investigación previa ya está registrado" });
+        // Verificar si alguno de los campos está presente y ya existe en la base de datos
+        if (numero_investigacion_previa) {
+            const delegacionExistentePorInvestigacionPrevia = await prisma.delegacion.findFirst({
+                where: {
+                    numero_investigacion_previa: numero_investigacion_previa
                 }
+            });
+
+            if (delegacionExistentePorInvestigacionPrevia) {
+                return res.status(400).json({ msg: "El número de investigación previa ya está registrado" });
             }
+        }
 
-            if (numero_instruccion_fiscal) {
-                const delegacionExistentePorInstruccionFiscal = await prisma.delegacion.findFirst({
-                    where: {
-                        numero_instruccion_fiscal: numero_instruccion_fiscal
-                    }
-                });
-
-                if (delegacionExistentePorInstruccionFiscal) {
-                    return res.status(400).json({ msg: "El número de instrucción fiscal ya está registrado" });
+        if (numero_instruccion_fiscal) {
+            const delegacionExistentePorInstruccionFiscal = await prisma.delegacion.findFirst({
+                where: {
+                    numero_instruccion_fiscal: numero_instruccion_fiscal
                 }
+            });
+
+            if (delegacionExistentePorInstruccionFiscal) {
+                return res.status(400).json({ msg: "El número de instrucción fiscal ya está registrado" });
             }
         }
 
@@ -130,8 +133,11 @@ export const registrarDelegacion = async (req, res) => {
         });
         
         // Envía una respuesta indicando que se ha creado la delegación con éxito
-        res.status(200).json({ msg: 'Delegación agregada correctamente', delegacion: nuevaDelegacion });
-    } catch (error) {
+        res.status(200).json({ 
+            msg: 'Delegación agregada correctamente', 
+            delegacion: bigIntToString(nuevaDelegacion) // Convertir BigInt a string
+        });  
+     } catch (error) {
         // Si hay algún error, envía una respuesta de error
         console.error('Error al registrar la delegación:', error);
         res.status(500).send('Error al registrar la delegación');
