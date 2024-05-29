@@ -147,15 +147,14 @@ export const registrarDelegacion = async (req, res) => {
   
 // Detalle de una delegacion
 export const detalleDelegacion = async (req, res) => {
-
     const { id } = req.params; // Obtener el id del parámetro de la ruta
 
     try {
-
         const delegacionDetalle = await prisma.delegacion.findUnique({
             where: {
                 id: parseInt(id),
-            }, select: {
+            },
+            select: {
                 id:true,
                 numero_investigacion_previa: true,
                 numero_instruccion_fiscal: true,
@@ -221,19 +220,26 @@ export const detalleDelegacion = async (req, res) => {
             },
         });
 
-        // Verificar si se encontró un agente
+        // Verificar si se encontró una delegación
         if (!delegacionDetalle) {
-            res.status(200).json( {msg: `Lo sentimos, no se encontró la delegación con el ID ${id}`});
+            return res.status(404).json({ msg: `Lo sentimos, no se encontró la delegación con el ID ${id}` });
         }
 
-        // Si se encontró la delegación, enviarla como respuesta
-        res.status(200).json(delegacionDetalle);
+         // Convertir los valores de BigInt a String o a un tipo de dato compatible directamente en el objeto delegacionDetalle
+         const delegacionDetalleString = {
+            ...delegacionDetalle,
+            numero_investigacion_previa: delegacionDetalle.numero_investigacion_previa.toString(), // Convertir BigInt a String
+            // Si hay otros valores BigInt, conviértelos aquí
+        };
+        // Enviar la delegación como respuesta JSON
+        res.status(200).json(delegacionDetalleString);
     } catch (error) {
-        // Si hay algún error, envía una respuesta de error
+        // Si hay algún error, enviar una respuesta de error
         console.error('Error al obtener detalle de la delegación:', error);
         res.status(500).send('Error al obtener detalle de la delegación');
     }
 };
+
 
 // Actualizar una delegacion
 export const actualizarDelegacion = async (req, res) => {
@@ -305,12 +311,21 @@ export const eliminarDelegacion = async (req, res) => {
 // Listar delegaciones
 export const listarDelegaciones = async (req, res) => {
     try {
-        const delegacion = await prisma.delegacion.findMany();
-        res.status(200).json(delegacion);
+        const delegaciones = await prisma.delegacion.findMany();
+        
+        // Convertir los valores de BigInt a String o a un tipo de dato compatible
+        const delegacionesJSON = delegaciones.map(delegacion => ({
+            ...delegacion,
+            numero_investigacion_previa: delegacion.numero_investigacion_previa.toString(), // Convertir BigInt a String
+            // Si hay otros valores BigInt, conviértelos aquí
+        }));
+        
+        res.status(200).json(delegacionesJSON);
     } catch (error) {
         // Si hay algún error, envía una respuesta de error
         console.error('Error, listar delegaciones:', error);
         res.status(500).send('Error, listar delegaciones');
     }
 };
+
   

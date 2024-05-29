@@ -44,9 +44,9 @@ model Agente {
 
 //Modelo Usuario
 model Usuario {
-  Orden            Int?      @default(autoincrement())
+  Orden      Int?      @default(autoincrement())
   id         Int       @id @default(autoincrement())
-  Grado            String?   @db.VarChar(255)
+  Grado      String?   @db.VarChar(255)
   nombre     String    @db.VarChar(255)
   email      String    @unique @db.VarChar(255)
   password   String    @db.VarChar(255)
@@ -55,6 +55,7 @@ model Usuario {
   agenteID   String
   token       String?   
   confirmEmail Boolean   @default(false)
+  mapeos           Mapeo[]   // Relación uno a muchos con Mapeo
 }
 
 enum RolEnum {
@@ -73,9 +74,11 @@ model Mapeo {
   nombreAgente    String    @map(name: "Apellido_Nombre") @db.VarChar(255) // Campo para almacenar el nombre del agente
   grado           String    @map(name: "Grado") @db.VarChar(255) // Campo para almacenar el grado del agente
   Rol             RolEnum
-  fechaHoraE      DateTime  @default(now())
-  fechaHoraS      DateTime  @default(now())
-  accionRealizada String    @db.VarChar(255)
+  fechaHoraE       DateTime  @default(now())
+  fechaHoraS       DateTime?
+  accionRealizada  String    @db.VarChar(255)
+  usuario          Usuario   @relation(fields: [usuarioId], references: [id])
+  usuarioId        Int
 }
 
 //Modelo Delegacion
