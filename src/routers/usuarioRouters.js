@@ -1,6 +1,6 @@
 // usuarioRoutes.js
 import { Router } from 'express';
-import { login,solicitudRegistro, registro, detalleUsuario, perfil, actualizarUsuario, eliminarUsuario, listarUsuarios, confirmEmail, recuperarPassword, comprobarTokenPasword, nuevoPassword, actualizarContraseña} from '../controllers/usuarioController.js';
+import { login,logout,solicitudRegistro, registro, detalleUsuario, perfil, actualizarUsuario, eliminarUsuario, listarUsuarios, confirmEmail, recuperarPassword, comprobarTokenPasword, nuevoPassword, actualizarContraseña} from '../controllers/usuarioController.js';
 import {checkRoleAuth} from '../middlewares/autenticacion.js'
 import {loginVU, solicitudRegistroVU, contraseñaVU, passwordCorreoRVU, contraseñaNuevaVU} from '../validation/usuariosvalidacion.js'
 
@@ -8,7 +8,10 @@ import {loginVU, solicitudRegistroVU, contraseñaVU, passwordCorreoRVU, contrase
 const router = Router();
 
 // Ruta para logear un usuario
-router.post('/login', loginVU, login);
+router.post('/login', loginVU, login); 
+
+// Ruta para logear un usuario
+router.post('/logout/:id', logout);
 
 // Ruta para solicitar un registro sin rol 
 router.post('/solicitar-registro', solicitudRegistroVU, solicitudRegistro);

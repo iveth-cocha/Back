@@ -2,6 +2,8 @@ import { encrypPassword,matchPassword, crearToken } from '../middlewares/bcrypt.
 import {sendMailToUser, sendMailToResetPassword, sendMailToAdmin}  from '../config/nodemailer.js'; 
 import {generarJWT, VDToken} from "../helpers/crearJWT.js"
 import { PrismaClient } from '@prisma/client';
+import { DateTime } from 'luxon'; 
+
 
 const prisma = new PrismaClient();
 
@@ -37,6 +39,43 @@ export const login = async (req, res) => {
       return res.status(404).json({ msg: "Lo sentimos, la contraseña no es correcta" });
     }
 
+     // Obtener fecha y hora actual
+     const fechaHoraInicioTimestamp = Date.now(); // Get timestamp in milliseconds
+     const fechaHoraInicioDate = new Date(fechaHoraInicioTimestamp); // Create Date object
+     const opcionesFormato = {
+       day: 'numeric',
+       month: 'numeric',
+       year: 'numeric',
+       hour: 'numeric',
+       minute: 'numeric',
+       second: 'numeric',
+       timeZone: 'America/Guayaquil'
+     };
+ 
+    const fechaHoraFormateada = fechaHoraInicioDate.toLocaleString('es-EC', opcionesFormato); // Formatear fecha y hora
+ 
+    // Crear un nuevo registro en la tabla Mapeo con los datos del usuario y la hora de entrada
+    await prisma.mapeo.create({
+      data: {
+        agente: {
+          connect: {
+            Cedula: usuarioBDD.agenteID
+          }
+        },
+        usuario: {
+          connect: {
+            id: usuarioBDD.id
+          }
+        },
+        hora_entrada: fechaHoraFormateada,
+        cedula: usuarioBDD.agente.Cedula,
+        nombreAgente: usuarioBDD.agente.Apellido_Nombre,
+        grado: usuarioBDD.agente.Grado,
+        Rol: usuarioBDD.Rol,
+        accionRealizada: "Ingreso"
+      }
+    });
+
     const token = generarJWT(usuarioBDD.id, usuarioBDD.Rol)
 
     // Extraer los campos necesarios del usuario para la respuesta
@@ -57,7 +96,32 @@ export const login = async (req, res) => {
     res.status(500).json({ msg: "Error al logear el usuario" });
   }
 };
+/*export const logout = async (req, res) => {
+  try {
+    const userId = req.usuarioBDD.id
 
+    if (!userId) {
+      return res.status(400).json({ msg: "No se pudo identificar al usuario." });
+    }
+
+    // Obtener fecha y hora actual
+    const fechaHoraLogout = DateTime.now().setZone('America/Guayaquil').toISO();
+
+    // Actualizar la fecha y hora de deslogeo en la base de datos
+    await prisma.usuario.update({
+      where: { id: userId },
+      data: { fechaHoraS: fechaHoraLogout }
+    });
+
+    res.status(200).json({ 
+      msg: "Logout exitoso", 
+      fechaHoraLogout 
+    });
+  } catch (error) {
+    console.error('Error al deslogear el usuario:', error);
+    res.status(500).json({ msg: "Error al deslogear el usuario" });
+  }
+};*/
 // Solicitud para el registro un nuevo usuario
 export const solicitudRegistro = async (req, res) => {
   const { cedula, nombre, email, mensaje } = req.body;
@@ -499,5 +563,61 @@ export const actualizarContraseña = async (req, res) => {
   } catch (error) {
     console.error('Error al actualizar la contraseña:', error);
     res.status(500).json({ msg: 'Ocurrió un error al actualizar la contraseña' });
+  }
+};
+
+export const logout = async (req, res) => {
+  const { id } = req.params; // Obtener el ID del usuario de los parámetros de la ruta
+
+  try {
+    // Convertir el ID a un número entero
+    const idInt = parseInt(id);
+
+    // Buscar al usuario por el ID en la base de datos
+    const usuarioBDD = await prisma.mapeo.findUnique({
+      where: {
+        id: idInt
+      }
+    });
+
+    // Verificar si el usuario existe
+    if (!usuarioBDD) {
+      return res.status(404).json({ msg: "Lo sentimos, el usuario no se encuentra registrado." });
+    }
+
+    // Obtener fecha y hora actual
+    const fechaHoraSalidaTimestamp = Date.now(); // Obtener timestamp en milisegundos
+    const fechaHoraSalidaDate = new Date(fechaHoraSalidaTimestamp); // Crear objeto Date
+    const opcionesFormato = {
+      day: 'numeric',
+      month: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      timeZone: 'America/Guayaquil'
+    };
+
+    const fechaHoraFormateada = fechaHoraSalidaDate.toLocaleString('es-EC', opcionesFormato); // Formatear fecha y hora
+
+    // Actualizar la hora de salida del usuario en la tabla Mapeo
+    await prisma.mapeo.update({
+      where: {
+        id: idInt // Use the 'id' field for identifying the Mapeo record
+      },
+      data: {
+        hora_salida: fechaHoraFormateada
+      }
+    });
+
+    // Enviar una respuesta exitosa con los detalles del usuario
+    res.status(200).json({
+      msg: "Sesión cerrada con éxito",
+      fechaHoraFormateada
+    });
+  } catch (error) {
+    // Si hay algún error, enviar una respuesta de error
+    console.error('Error al cerrar la sesión del usuario:', error);
+    res.status(500).json({ msg: "Error al cerrar la sesión del usuario" });
   }
 };

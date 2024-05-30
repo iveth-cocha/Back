@@ -58,15 +58,9 @@ model Usuario {
   mapeos           Mapeo[]   // Relación uno a muchos con Mapeo
 }
 
-enum RolEnum {
-  Administrador
-  Visualizador
-  Registrador
-}
-
 //Modelo Mapeo
 model Mapeo {
-  Orden            Int?      @default(autoincrement())
+  Orden           Int?      @default(autoincrement())
   id              Int       @id @default(autoincrement())
   agente          Agente    @relation(fields: [agenteID], references: [Cedula])
   agenteID        String
@@ -74,11 +68,16 @@ model Mapeo {
   nombreAgente    String    @map(name: "Apellido_Nombre") @db.VarChar(255) // Campo para almacenar el nombre del agente
   grado           String    @map(name: "Grado") @db.VarChar(255) // Campo para almacenar el grado del agente
   Rol             RolEnum
-  fechaHoraE       DateTime  @default(now())
-  fechaHoraS       DateTime?
-  accionRealizada  String    @db.VarChar(255)
-  usuario          Usuario   @relation(fields: [usuarioId], references: [id])
-  usuarioId        Int
+  hora_entrada     String?
+  hora_salida      String?
+  accionRealizada String    @db.VarChar(255)
+  usuario         Usuario   @relation(fields: [usuarioId], references: [id])
+  usuarioId       Int
+}
+enum RolEnum {
+  Administrador
+  Visualizador
+  Registrador
 }
 
 //Modelo Delegacion

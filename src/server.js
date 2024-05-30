@@ -6,7 +6,7 @@ import usuarioRouters from '../src/routers/usuarioRouters.js';
 import delegacionRouters from '../src/routers/delegacionRouters.js';
 import delitosRouters from '../src/routers/delitosRouters.js';
 import agentesRouters from '../src/routers/agenteRouters.js'
-
+import mapeoRouters from '../src/routers/mapeoRouters.js'
 
 // Inicializaciones
 const app = express()
@@ -28,6 +28,7 @@ app.use('/api', usuarioRouters);
 app.use('/api', delegacionRouters);
 app.use('/api', delitosRouters);
 app.use('/api', agentesRouters);
+app.use('/api', mapeoRouters);
 
 
 
