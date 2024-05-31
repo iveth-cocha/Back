@@ -1,6 +1,9 @@
-import express from 'express';
+import { Router } from 'express';
+import { listarMapeos} from '../controllers/mapeoController.js';
+const router = Router();
 
-const router = express.Router();
 
+// Ruta para listar los mapeos
+router.get('/mapeos',  listarMapeos);
 
 export default router;

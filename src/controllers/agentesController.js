@@ -2,7 +2,6 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 // Registro un nuevo Agente
-// Ruta y controlador para registrar un nuevo agente
 export const registrarAgente = async (req, res) => {
   let agentesNuevos = req.body; // Usamos 'let' en lugar de 'const'
 
@@ -59,7 +58,6 @@ export const registrarAgente = async (req, res) => {
     res.status(500).send('Error al registrar al agente');
   }
 };
-
 
 // Detalle de un Agente
 export const detalleAgente = async (req, res) => {
