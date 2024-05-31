@@ -1,8 +1,7 @@
-import { encrypPassword,matchPassword, crearToken } from '../middlewares/bcrypt.js';
+import { encrypPassword,matchPassword, crearToken, crearTokenSession } from '../middlewares/bcrypt.js';
 import {sendMailToUser, sendMailToResetPassword, sendMailToAdmin}  from '../config/nodemailer.js'; 
 import {generarJWT, VDToken} from "../helpers/crearJWT.js"
 import { PrismaClient } from '@prisma/client';
-import { DateTime } from 'luxon'; 
 
 
 const prisma = new PrismaClient();
@@ -55,6 +54,8 @@ export const login = async (req, res) => {
     const fechaHoraFormateada = fechaHoraInicioDate.toLocaleString('es-EC', opcionesFormato); // Formatear fecha y hora
  
     // Crear un nuevo registro en la tabla Mapeo con los datos del usuario y la hora de entrada
+    const tokenSession = crearTokenSession();
+
     await prisma.mapeo.create({
       data: {
         agente: {
@@ -67,6 +68,7 @@ export const login = async (req, res) => {
             id: usuarioBDD.id
           }
         },
+        tokenSession: tokenSession,
         hora_entrada: fechaHoraFormateada,
         cedula: usuarioBDD.agente.Cedula,
         nombreAgente: usuarioBDD.agente.Apellido_Nombre,
@@ -438,8 +440,8 @@ export const recuperarPassword = async (req, res) => {
       return res.status(404).json({ msg: "Lo sentimos, el usuario no se encuentra registrado" });
     }
 
-    // Generar un token y asignarlo al usuario
-    const token = crearToken(); // Debes tener una función crearToken implementada
+    // Generar un token y lo asigna al usuario
+    const token = crearToken(); 
     await prisma.usuario.update({
       where: {
         email: email,
@@ -566,58 +568,70 @@ export const actualizarContraseña = async (req, res) => {
   }
 };
 
+// /mnt/data/controllers/usuarioController.js
 export const logout = async (req, res) => {
-  const { id } = req.params; // Obtener el ID del usuario de los parámetros de la ruta
-
   try {
-    // Convertir el ID a un número entero
-    const idInt = parseInt(id);
-
-    // Buscar al usuario por el ID en la base de datos
-    const usuarioBDD = await prisma.mapeo.findUnique({
-      where: {
-        id: idInt
-      }
-    });
-
-    // Verificar si el usuario existe
-    if (!usuarioBDD) {
-      return res.status(404).json({ msg: "Lo sentimos, el usuario no se encuentra registrado." });
+    // Verificar si el token está presente en los parámetros de la solicitud
+    const tokenSession = req.params.tokenSession;
+    if (!tokenSession) {
+      return res.status(400).json({ msg: "Lo sentimos, token session invalido" });
     }
 
-    // Obtener fecha y hora actual
-    const fechaHoraSalidaTimestamp = Date.now(); // Obtener timestamp en milisegundos
-    const fechaHoraSalidaDate = new Date(fechaHoraSalidaTimestamp); // Crear objeto Date
+    // Buscar al usuario por el token en la base de datos
+    const usuarioBDD = await prisma.mapeo.findFirst({
+      where: {
+        tokenSession: tokenSession,
+      },
+    });
+
+    // Verificar si el usuario no existe o si su token es nulo
+    if (!usuarioBDD || !usuarioBDD.tokenSession) {
+      return res.status(404).json({ msg: "El token de session no existe" });
+    }
+
+    // Obtener la fecha y hora actual
+    const fechaHoraSalidaTimestamp = Date.now();
+    const fechaHoraSalidaDate = new Date(fechaHoraSalidaTimestamp);
     const opcionesFormato = {
-      day: 'numeric',
-      month: 'numeric',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      second: 'numeric',
-      timeZone: 'America/Guayaquil'
+      day: "numeric",
+      month: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+      timeZone: "America/Guayaquil",
     };
 
-    const fechaHoraFormateada = fechaHoraSalidaDate.toLocaleString('es-EC', opcionesFormato); // Formatear fecha y hora
+    const fechaHoraFormateada = fechaHoraSalidaDate.toLocaleString("es-EC", opcionesFormato);
 
     // Actualizar la hora de salida del usuario en la tabla Mapeo
     await prisma.mapeo.update({
       where: {
-        id: idInt // Use the 'id' field for identifying the Mapeo record
+        tokenSession: tokenSession,
       },
       data: {
-        hora_salida: fechaHoraFormateada
-      }
+        hora_salida: fechaHoraFormateada,
+      },
+    });
+
+    // Inhabilitar el tokenSession después del cierre de sesión
+    await prisma.mapeo.update({
+      where: {
+        tokenSession: tokenSession,
+      },
+      data: {
+        tokenSession: null, // Establecer tokenSession a null
+      },
     });
 
     // Enviar una respuesta exitosa con los detalles del usuario
     res.status(200).json({
       msg: "Sesión cerrada con éxito",
-      fechaHoraFormateada
+      fechaHoraFormateada,
     });
   } catch (error) {
     // Si hay algún error, enviar una respuesta de error
-    console.error('Error al cerrar la sesión del usuario:', error);
+    console.error("Error al cerrar la sesión del usuario:", error);
     res.status(500).json({ msg: "Error al cerrar la sesión del usuario" });
   }
 };

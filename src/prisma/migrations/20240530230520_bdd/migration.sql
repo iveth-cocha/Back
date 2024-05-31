@@ -40,13 +40,13 @@ CREATE TABLE "Agente" (
 CREATE TABLE "Usuario" (
     "Orden" SERIAL,
     "id" SERIAL NOT NULL,
+    "agenteID" TEXT NOT NULL,
     "Grado" VARCHAR(255),
     "nombre" VARCHAR(255) NOT NULL,
     "email" VARCHAR(255) NOT NULL,
     "password" VARCHAR(255) NOT NULL,
     "Rol" "RolEnum" NOT NULL,
-    "agenteID" TEXT NOT NULL,
-    "token" TEXT,
+    "tokenPassword" TEXT,
     "confirmEmail" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Usuario_pkey" PRIMARY KEY ("id")
@@ -54,16 +54,17 @@ CREATE TABLE "Usuario" (
 
 -- CreateTable
 CREATE TABLE "Mapeo" (
-    "Orden" SERIAL,
     "id" SERIAL NOT NULL,
-    "agenteID" TEXT NOT NULL,
     "Cedula" TEXT NOT NULL,
-    "Apellido_Nombre" VARCHAR(255) NOT NULL,
     "Grado" VARCHAR(255) NOT NULL,
+    "Apellido_Nombre" VARCHAR(255) NOT NULL,
     "Rol" "RolEnum" NOT NULL,
-    "fechaHoraE" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "fechaHoraS" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "hora_entrada" TEXT,
+    "hora_salida" TEXT,
+    "tokenSession" VARCHAR(255) NOT NULL,
     "accionRealizada" VARCHAR(255) NOT NULL,
+    "agenteID" TEXT NOT NULL,
+    "usuarioId" INTEGER NOT NULL,
 
     CONSTRAINT "Mapeo_pkey" PRIMARY KEY ("id")
 );
@@ -74,7 +75,7 @@ CREATE TABLE "Delegacion" (
     "anio_ingreso" INTEGER,
     "orden" INTEGER,
     "mes_ingreso" TEXT,
-    "numero_investigacion_previa" INTEGER,
+    "numero_investigacion_previa" BIGINT,
     "numero_instruccion_fiscal" VARCHAR(255),
     "zona" VARCHAR(255),
     "provincia" VARCHAR(255),
@@ -177,3 +178,6 @@ ALTER TABLE "Usuario" ADD CONSTRAINT "Usuario_agenteID_fkey" FOREIGN KEY ("agent
 
 -- AddForeignKey
 ALTER TABLE "Mapeo" ADD CONSTRAINT "Mapeo_agenteID_fkey" FOREIGN KEY ("agenteID") REFERENCES "Agente"("Cedula") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Mapeo" ADD CONSTRAINT "Mapeo_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

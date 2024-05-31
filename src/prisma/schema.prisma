@@ -46,31 +46,31 @@ model Agente {
 model Usuario {
   Orden      Int?      @default(autoincrement())
   id         Int       @id @default(autoincrement())
+  agente     Agente    @relation(fields: [agenteID], references: [Cedula])
+  agenteID   String
   Grado      String?   @db.VarChar(255)
   nombre     String    @db.VarChar(255)
   email      String    @unique @db.VarChar(255)
   password   String    @db.VarChar(255)
   Rol        RolEnum
-  agente     Agente    @relation(fields: [agenteID], references: [Cedula])
-  agenteID   String
-  token       String?   
+  token     String?   
   confirmEmail Boolean   @default(false)
-  mapeos           Mapeo[]   // Relación uno a muchos con Mapeo
+  mapeos       Mapeo[]   // Relación uno a muchos con Mapeo
 }
 
 //Modelo Mapeo
 model Mapeo {
-  Orden           Int?      @default(autoincrement())
   id              Int       @id @default(autoincrement())
+  cedula          String    @map(name: "Cedula") // Campo para almacenar la cédula del agente
+  grado           String    @map(name: "Grado") @db.VarChar(255) // Campo para almacenar el grado del agente
+  nombreAgente    String    @map(name: "Apellido_Nombre") @db.VarChar(255) // Campo para almacenar el nombre del agente
+  Rol             RolEnum
+  hora_entrada    String?
+  hora_salida     String?
+  tokenSession    String?   @unique
+  accionRealizada String    @db.VarChar(255)
   agente          Agente    @relation(fields: [agenteID], references: [Cedula])
   agenteID        String
-  cedula          String    @map(name: "Cedula") // Campo para almacenar la cédula del agente
-  nombreAgente    String    @map(name: "Apellido_Nombre") @db.VarChar(255) // Campo para almacenar el nombre del agente
-  grado           String    @map(name: "Grado") @db.VarChar(255) // Campo para almacenar el grado del agente
-  Rol             RolEnum
-  hora_entrada     String?
-  hora_salida      String?
-  accionRealizada String    @db.VarChar(255)
   usuario         Usuario   @relation(fields: [usuarioId], references: [id])
   usuarioId       Int
 }

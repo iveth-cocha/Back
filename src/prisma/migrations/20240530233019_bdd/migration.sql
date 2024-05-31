@@ -1,0 +1,9 @@
+-- AlterTable
+ALTER TABLE "Agente" ALTER COLUMN "ORD" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "Mapeo" ALTER COLUMN "tokenSession" DROP NOT NULL,
+ALTER COLUMN "tokenSession" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "Usuario" ALTER COLUMN "Orden" DROP NOT NULL;

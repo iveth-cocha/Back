@@ -11,7 +11,7 @@ const router = Router();
 router.post('/login', loginVU, login); 
 
 // Ruta para logear un usuario
-router.post('/logout/:id', logout);
+router.post('/logout/:tokenSession', logout);
 
 // Ruta para solicitar un registro sin rol 
 router.post('/solicitar-registro', solicitudRegistroVU, solicitudRegistro);

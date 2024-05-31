@@ -15,3 +15,11 @@ export const crearToken  = () => {
     const tokenGenerated = Math.random().toString(36).slice(2);
     return tokenGenerated;
 }
+
+export const crearTokenSession = () => {
+    let tokenGenerated = '';
+    for (let i = 0; i < 5; i++) {
+      tokenGenerated += Math.random().toString(36).slice(2);
+    }
+    return tokenGenerated;
+  }
