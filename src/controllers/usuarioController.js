@@ -1,6 +1,6 @@
-import { encrypPassword,matchPassword, crearToken, crearTokenSession } from '../middlewares/bcrypt.js';
-import {sendMailToUser, sendMailToResetPassword, sendMailToAdmin}  from '../config/nodemailer.js'; 
-import {generarJWT, VDToken} from "../helpers/crearJWT.js"
+import { encrypPassword, matchPassword, crearToken, crearTokenSession } from '../middlewares/bcrypt.js';
+import { sendMailToUser, sendMailToResetPassword, sendMailToAdmin } from '../config/nodemailer.js';
+import { generarJWT, VDToken } from "../helpers/crearJWT.js"
 import { PrismaClient } from '@prisma/client';
 
 
@@ -38,21 +38,21 @@ export const login = async (req, res) => {
       return res.status(404).json({ msg: "Lo sentimos, la contraseña no es correcta" });
     }
 
-     // Obtener fecha y hora actual
-     const fechaHoraInicioTimestamp = Date.now(); // Get timestamp in milliseconds
-     const fechaHoraInicioDate = new Date(fechaHoraInicioTimestamp); // Create Date object
-     const opcionesFormato = {
-       day: 'numeric',
-       month: 'numeric',
-       year: 'numeric',
-       hour: 'numeric',
-       minute: 'numeric',
-       second: 'numeric',
-       timeZone: 'America/Guayaquil'
-     };
- 
+    // Obtener fecha y hora actual
+    const fechaHoraInicioTimestamp = Date.now(); // Get timestamp in milliseconds
+    const fechaHoraInicioDate = new Date(fechaHoraInicioTimestamp); // Create Date object
+    const opcionesFormato = {
+      day: 'numeric',
+      month: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      timeZone: 'America/Guayaquil'
+    };
+
     const fechaHoraFormateada = fechaHoraInicioDate.toLocaleString('es-EC', opcionesFormato); // Formatear fecha y hora
- 
+
     // Crear un nuevo registro en la tabla Mapeo con los datos del usuario y la hora de entrada
     const tokenSession = crearTokenSession();
 
@@ -81,7 +81,7 @@ export const login = async (req, res) => {
     const token = generarJWT(usuarioBDD.id, usuarioBDD.Rol)
 
     // Extraer los campos necesarios del usuario para la respuesta
-    const { nombre, Rol, agenteID, agente, id} = usuarioBDD;
+    const { nombre, Rol, agenteID, agente, id } = usuarioBDD;
     const grado = agente.Grado; // Suponiendo que "grado" es un campo en la tabla Agente
     // Enviar una respuesta exitosa con los detalles del usuario
     res.status(200).json({
@@ -98,32 +98,7 @@ export const login = async (req, res) => {
     res.status(500).json({ msg: "Error al logear el usuario" });
   }
 };
-/*export const logout = async (req, res) => {
-  try {
-    const userId = req.usuarioBDD.id
 
-    if (!userId) {
-      return res.status(400).json({ msg: "No se pudo identificar al usuario." });
-    }
-
-    // Obtener fecha y hora actual
-    const fechaHoraLogout = DateTime.now().setZone('America/Guayaquil').toISO();
-
-    // Actualizar la fecha y hora de deslogeo en la base de datos
-    await prisma.usuario.update({
-      where: { id: userId },
-      data: { fechaHoraS: fechaHoraLogout }
-    });
-
-    res.status(200).json({ 
-      msg: "Logout exitoso", 
-      fechaHoraLogout 
-    });
-  } catch (error) {
-    console.error('Error al deslogear el usuario:', error);
-    res.status(500).json({ msg: "Error al deslogear el usuario" });
-  }
-};*/
 // Solicitud para el registro un nuevo usuario
 export const solicitudRegistro = async (req, res) => {
   const { cedula, nombre, email, mensaje } = req.body;
@@ -141,7 +116,7 @@ export const solicitudRegistro = async (req, res) => {
 
 // Registro un nuevo usuario
 export const registro = async (req, res) => {
-  
+
   const { agenteID, nombre, email, Rol } = req.body;
 
   try {
@@ -172,7 +147,7 @@ export const registro = async (req, res) => {
         email: email,
       },
     });
-    
+
     if (verificarEmailBDD) {
       return res.status(400).json({ msg: "Lo sentimos, el email ya se encuentra registrado" });
     }
@@ -236,7 +211,7 @@ export const detalleUsuario = async (req, res) => {
         nombre: true,
         email: true,
         Rol: true,
-        agenteID:true,
+        agenteID: true,
         agente: {
           select: {
             Cedula: true,
@@ -257,6 +232,7 @@ export const detalleUsuario = async (req, res) => {
   }
 };
 
+// Perfil de un usuario
 export const perfil = async (req, res) => {
   try {
     // Obtener el token de autorización del encabezado de la solicitud
@@ -301,7 +277,7 @@ export const actualizarUsuario = async (req, res) => {
   const datosActualizadosUsuario = req.body;
 
   try {
-    
+
     // Verificar si el correo proporcionado ya está en uso por otro usuario
     const correoExistente = await prisma.usuario.findFirst({
       where: {
@@ -314,28 +290,28 @@ export const actualizarUsuario = async (req, res) => {
 
     // Busca al usuario por su id
     const usuario = await prisma.usuario.findUnique({
-        where: {
-            id: parseInt(id),
-        },
+      where: {
+        id: parseInt(id),
+      },
     });
 
     // Verificar si se encontró al usuario
     if (!usuario) {
-        return res.status(404).json({ msg: `Lo sentimos, no se encontró el usuario con ID ${id}` });
+      return res.status(404).json({ msg: `Lo sentimos, no se encontró el usuario con ID ${id}` });
     }
 
     // Actualizar el perfil del usuario
     await prisma.usuario.update({
       where: {
-          id: parseInt(id),
+        id: parseInt(id),
       },
       data: datosActualizadosUsuario // Actualizar con los datos proporcionados en el cuerpo de la solicitud
     });
 
     res.status(200).json({ msg: "Perfil actualizado correctamente" });
   } catch (error) {
-      console.error('Error al actualizar el perfil:', error);
-      res.status(500).json({ msg: 'Ocurrió un error al actualizar el perfil' });
+    console.error('Error al actualizar el perfil:', error);
+    res.status(500).json({ msg: 'Ocurrió un error al actualizar el perfil' });
   }
 };
 
@@ -361,7 +337,7 @@ export const eliminarUsuario = async (req, res) => {
         id: Number(id),
       },
     });
-    
+
     res.status(200).json({ msg: 'Usuario eliminado correctamente', usuario: usuarioEliminado });
   } catch (error) {
     console.error('Error al eliminar un usuario:', error);
@@ -383,43 +359,43 @@ export const listarUsuarios = async (req, res) => {
 // Confirmar email de un usuario
 export const confirmEmail = async (req, res) => {
   try {
-      // Verificar si el token está presente en los parámetros de la solicitud
-      if (!req.params.token) {
-          return res.status(400).json({ msg: "Lo sentimos, no se puede validar la cuenta" });
+    // Verificar si el token está presente en los parámetros de la solicitud
+    if (!req.params.token) {
+      return res.status(400).json({ msg: "Lo sentimos, no se puede validar la cuenta" });
+    }
+
+    // Buscar al usuario por el token en la base de datos
+    const usuarioBDD = await prisma.usuario.findFirst({
+      where: {
+        token: req.params.token
       }
+    });
 
-      // Buscar al usuario por el token en la base de datos
-      const usuarioBDD = await prisma.usuario.findFirst({
-          where: {
-              token: req.params.token
-          }
-      });
+    // Verificar si el usuario no existe o si su token es nulo
+    if (!usuarioBDD?.token) {
+      return res.status(404).json({ msg: "La cuenta ya ha sido confirmada" });
+    }
 
-      // Verificar si el usuario no existe o si su token es nulo
-      if (!usuarioBDD?.token) {
-          return res.status(404).json({ msg: "La cuenta ya ha sido confirmada" });
+    // Verificar si el email ya ha sido confirmado
+    if (usuarioBDD.confirmEmail) {
+      return res.status(400).json({ msg: "El token ya ha sido confirmado" });
+    }
+
+    // Actualizar el token y establecer confirmEmail en true
+    const updatedUsuario = await prisma.usuario.update({
+      where: {
+        id: usuarioBDD.id
+      },
+      data: {
+        token: usuarioBDD.token,
+        confirmEmail: true
       }
+    });
 
-      // Verificar si el email ya ha sido confirmado
-      if (usuarioBDD.confirmEmail) {
-          return res.status(400).json({ msg: "El token ya ha sido confirmado" });
-      }
-
-      // Actualizar el token y establecer confirmEmail en true
-      const updatedUsuario = await prisma.usuario.update({
-          where: {
-              id: usuarioBDD.id
-          },
-          data: {
-              token: usuarioBDD.token,
-              confirmEmail: true
-          }
-      });
-
-      res.status(200).json({ msg: "Cuenta confirmana, es necesario que cree una contraseña" });
+    res.status(200).json({ msg: "Cuenta confirmana, es necesario que cree una contraseña" });
   } catch (error) {
-      console.error("Error al confirmar el email del usuario:", error);
-      res.status(500).json({ msg: "Ocurrió un error al confirmar el email del usuario" });
+    console.error("Error al confirmar el email del usuario:", error);
+    res.status(500).json({ msg: "Ocurrió un error al confirmar el email del usuario" });
   }
 };
 
@@ -441,7 +417,7 @@ export const recuperarPassword = async (req, res) => {
     }
 
     // Generar un token y lo asigna al usuario
-    const token = crearToken(); 
+    const token = crearToken();
     await prisma.usuario.update({
       where: {
         email: email,
@@ -568,7 +544,7 @@ export const actualizarContraseña = async (req, res) => {
   }
 };
 
-// /mnt/data/controllers/usuarioController.js
+//Cerrar sesion usuario
 export const logout = async (req, res) => {
   try {
     // Verificar si el token está presente en los parámetros de la solicitud

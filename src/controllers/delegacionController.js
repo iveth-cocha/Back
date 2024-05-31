@@ -143,8 +143,7 @@ export const registrarDelegacion = async (req, res) => {
         res.status(500).send('Error al registrar la delegación');
     }
 };
-
-  
+ 
 // Detalle de una delegacion
 export const detalleDelegacion = async (req, res) => {
     const { id } = req.params; // Obtener el id del parámetro de la ruta
@@ -239,7 +238,6 @@ export const detalleDelegacion = async (req, res) => {
         res.status(500).send('Error al obtener detalle de la delegación');
     }
 };
-
 
 // Actualizar una delegacion
 export const actualizarDelegacion = async (req, res) => {
