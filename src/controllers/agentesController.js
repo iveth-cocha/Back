@@ -62,19 +62,23 @@ export const registrarAgente = async (req, res) => {
 // Detalle de un Agente
 export const detalleAgente = async (req, res) => {
   
-  const { cedula } = req.params; // Obtener la cédula del parámetro de la ruta
+  const { Cedula  } = req.params; // Obtener la cédula del parámetro de la ruta
+
+  if (!Cedula) {
+    return res.status(400).json({ msg: 'Cédula no proporcionada' });
+  }
 
   try {
     // Realizar la búsqueda del agente
     const agenteDetalle = await prisma.agente.findUnique({
       where: {
-        Cedula: cedula?.toString()
+        Cedula: Cedula?.toString()
       },
     });
 
     // Verificar si se encontró un agente
     if (!agenteDetalle) {
-      res.status(200).json({ msg:`Lo sentimos, no se encontró el agente con la cédula ${cedula}`});
+      res.status(200).json({ msg:`Lo sentimos, no se encontró el agente con la cédula ${Cedula}`});
     }
     // Si se encontró un agente, enviarlo en la respuesta
     res.status(200).send(agenteDetalle);
@@ -88,26 +92,26 @@ export const detalleAgente = async (req, res) => {
 // Actualizar un Agente
 export const actualizarAgente = async (req, res) => {
 
-  const { cedula } = req.params; // Obtener la cédula del parámetro de la ruta
+  const { Cedula  } = req.params; // Obtener la cédula del parámetro de la ruta
   const datosActualizadosAG = req.body; // Datos actualizados del agente
 
   try {
     // Buscar al agente por su cédula
     const agenteActualizado = await prisma.agente.findUnique({
       where: {
-        Cedula: cedula?.toString()
+        Cedula: Cedula ?.toString()
       },
     });
 
     // Verificar si se encontró al agente
     if (!agenteActualizado) {
-      return res.status(404).json({ msg: `Lo sentimos, no se encontró el agente con la cédula ${cedula}` });
-    }
+      return res.status(404).json({ msg: `Lo sentimos, no se encontró el agente con la cédula ${Cedula}` });
+    } 
   
     // Actualizar el perfil del agente
     await prisma.agente.update({
       where: {
-        Cedula: cedula?.toString(),
+        Cedula: Cedula?.toString(),
       },
       data: datosActualizadosAG // Actualizar con los datos proporcionados en el cuerpo de la solicitud
     });
@@ -123,12 +127,12 @@ export const actualizarAgente = async (req, res) => {
 // Eliminar un delito
 export const eliminarAgente = async (req, res) => {
 
-  const { cedula } = req.params; // Obtener la cédula del parámetro de la ruta
+  const { Cedula } = req.params; // Obtener la cédula del parámetro de la ruta
 
   try {
     const agenteEliminado = await prisma.agente.findUnique({
       where:{
-        Cedula:cedula?.toString()
+        Cedula:Cedula?.toString()
       }
     });
 
@@ -138,7 +142,7 @@ export const eliminarAgente = async (req, res) => {
 
     await prisma.agente.delete({
       where: {
-        Cedula: cedula?.toString()
+        Cedula: Cedula?.toString()
       }
     });
 

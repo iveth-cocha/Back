@@ -30,7 +30,6 @@ export const registrarDelito = async (req, res) => {
   }
 };
 
-
 // Detalle de un delito
 export const detalleDelito = async (req, res) => {
 
@@ -118,7 +117,6 @@ export const eliminarDelito = async (req, res) => {
     res.status(500).send('Error al eliminar un delito');
   }
 };
-
 
 // Listar un delito
 export const listarDelitos = async (req, res) => {

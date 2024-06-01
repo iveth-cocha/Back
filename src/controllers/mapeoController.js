@@ -25,11 +25,6 @@ export const detalleMapeo = async (req, res) => {
         }
       });
   
-      // Verificar si el mapeo no existe o si su token de sesión es nulo
-      if (!mapeoDetalle || !mapeoDetalle.tokenSession) {
-        return res.status(404).json({ msg: "El token de sesión no existe" });
-      }
-  
       // Si se encontró un mapeo, enviarlo en la respuesta
       res.status(200).send(mapeoDetalle);
     } catch (error) {
