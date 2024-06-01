@@ -107,13 +107,22 @@ export const actualizarAgente = async (req, res) => {
     if (!agenteActualizado) {
       return res.status(404).json({ msg: `Lo sentimos, no se encontró el agente con la cédula ${Cedula}` });
     } 
+
+    // Convertir los campos numéricos a enteros
+    const datosActualizadosAGParsed = {
+      ...datosActualizadosAG,
+      Terno: parseInt(datosActualizadosAG.Terno),
+      Camisa: parseInt(datosActualizadosAG.Camisa),
+      Calzado: parseInt(datosActualizadosAG.Calzado),
+      Cabeza: parseInt(datosActualizadosAG.Cabeza)
+    };
   
     // Actualizar el perfil del agente
     await prisma.agente.update({
       where: {
         Cedula: Cedula?.toString(),
       },
-      data: datosActualizadosAG // Actualizar con los datos proporcionados en el cuerpo de la solicitud
+      data: datosActualizadosAGParsed // Actualizar con los datos proporcionados en el cuerpo de la solicitud
     });
 
     res.status(200).json({ msg: "Perfil actualizado correctamente" });
