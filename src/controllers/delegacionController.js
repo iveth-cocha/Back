@@ -35,13 +35,26 @@ export const registrarDelegacion = async (req, res) => {
 
         const { numero_investigacion_previa, numero_instruccion_fiscal } = datosDelegacion;
 
-        // Validar si los números son iguales cuando ambos están presentes
-        if (numero_investigacion_previa && numero_instruccion_fiscal && numero_investigacion_previa === numero_instruccion_fiscal) {
+        
+
+        // Validar que al menos uno de los campos esté presente
+        if ((!numero_investigacion_previa || numero_investigacion_previa === null) &&
+        (!numero_instruccion_fiscal || numero_instruccion_fiscal.trim() === "")) {
+        return res.status(400).json({ msg: "Debe proporcionar al menos un número de investigación previa o instrucción fiscal" });
+        }
+
+       // Convertir ambos valores a cadenas de texto para la comparación
+        const numeroInvestigacionPreviaStr = numero_investigacion_previa !== null ? String(numero_investigacion_previa) : null;
+        const numeroInstruccionFiscalStr = numero_instruccion_fiscal ? numero_instruccion_fiscal.trim() : "";
+
+        // Validar si los números son iguales cuando ambos están presentes y no son null ni vacíos
+        if (numeroInvestigacionPreviaStr && numeroInstruccionFiscalStr &&
+            numeroInvestigacionPreviaStr === numeroInstruccionFiscalStr) {
             return res.status(400).json({ msg: "Los números de investigación previa e instrucción fiscal no pueden ser iguales" });
         }
 
         // Verificar si alguno de los campos está presente y ya existe en la base de datos
-        if (numero_investigacion_previa) {
+        if (numero_investigacion_previa && numero_investigacion_previa !== null) {
             const delegacionExistentePorInvestigacionPrevia = await prisma.delegacion.findFirst({
                 where: {
                     numero_investigacion_previa: numero_investigacion_previa
@@ -53,7 +66,7 @@ export const registrarDelegacion = async (req, res) => {
             }
         }
 
-        if (numero_instruccion_fiscal) {
+        if (numero_instruccion_fiscal && numero_instruccion_fiscal.trim() !== "") {
             const delegacionExistentePorInstruccionFiscal = await prisma.delegacion.findFirst({
                 where: {
                     numero_instruccion_fiscal: numero_instruccion_fiscal
@@ -314,8 +327,8 @@ export const listarDelegaciones = async (req, res) => {
         // Convertir los valores de BigInt a String o a un tipo de dato compatible
         const delegacionesJSON = delegaciones.map(delegacion => ({
             ...delegacion,
-            numero_investigacion_previa: delegacion.numero_investigacion_previa.toString(), // Convertir BigInt a String
-            // Si hay otros valores BigInt, conviértelos aquí
+            numero_investigacion_previa: delegacion.numero_investigacion_previa !== null ? delegacion.numero_investigacion_previa.toString() : null,
+            // Si hay otros valores BigInt, conviértelos aquí de manera similar
         }));
         
         res.status(200).json(delegacionesJSON);
