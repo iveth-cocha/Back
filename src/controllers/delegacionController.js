@@ -35,8 +35,6 @@ export const registrarDelegacion = async (req, res) => {
 
         const { numero_investigacion_previa, numero_instruccion_fiscal } = datosDelegacion;
 
-        
-
         // Validar que al menos uno de los campos esté presente
         if ((!numero_investigacion_previa || numero_investigacion_previa === null) &&
         (!numero_instruccion_fiscal || numero_instruccion_fiscal.trim() === "")) {

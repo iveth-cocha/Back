@@ -120,6 +120,21 @@ export const registro = async (req, res) => {
   const { agenteID, nombre, email, Rol } = req.body;
 
   try {
+    const ultimoOrden = await prisma.usuario.findFirst({
+      select: {
+        Orden: true,
+      },
+      orderBy: {
+        Orden: 'desc'
+      }
+    });
+
+    let nuevoOrden = 1;
+
+    if (ultimoOrden) {
+      nuevoOrden = ultimoOrden.Orden + 1;
+    }
+
     // Verificar si la cedula está registrada en la base de datos y pertenece a algún agente
     const agenteExistente = await prisma.agente.findUnique({
       where: {
@@ -174,6 +189,7 @@ export const registro = async (req, res) => {
     // Crear un nuevo usuario en la base de datos
     const nuevoUsuario = await prisma.usuario.create({
       data: {
+        Orden: nuevoOrden,
         nombre: nombre,
         email: email,
         password: passwordEncrypted,
@@ -315,6 +331,19 @@ export const actualizarUsuario = async (req, res) => {
   }
 };
 
+// Método para reordenar los usuarios después de eliminar uno (OJO)
+const reordenarUsuarios = async () => {
+  const usuarios = await prisma.usuario.findMany();
+  usuarios.sort((a, b) => a.Orden - b.Orden); // Ordenar los usuarios por el campo Orden
+
+  // Actualizar el campo Orden en secuencia
+  for (let i = 0; i < usuarios.length; i++) {
+      await prisma.usuario.update({
+          where: { id: usuarios[i].id },
+          data: { Orden: i + 1 } // Incrementar el orden en 1
+      });
+  }
+};
 // Eliminar un usuario
 export const eliminarUsuario = async (req, res) => {
 
@@ -337,6 +366,8 @@ export const eliminarUsuario = async (req, res) => {
         id: Number(id),
       },
     });
+
+    await reordenarUsuarios();
 
     res.status(200).json({ msg: 'Usuario eliminado correctamente', usuario: usuarioEliminado });
   } catch (error) {
