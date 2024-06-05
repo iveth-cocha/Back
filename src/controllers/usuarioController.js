@@ -8,7 +8,6 @@ const prisma = new PrismaClient();
 
 //Login de un usuario
 export const login = async (req, res) => {
-
   const { email, password } = req.body;
 
   try {
@@ -56,27 +55,37 @@ export const login = async (req, res) => {
     // Crear un nuevo registro en la tabla Mapeo con los datos del usuario y la hora de entrada
     const tokenSession = crearTokenSession();
 
-    await prisma.mapeo.create({
-      data: {
-        agente: {
-          connect: {
-            Cedula: usuarioBDD.agenteID
-          }
+    await prisma.$transaction([
+      prisma.mapeo.create({
+        data: {
+          agente: {
+            connect: {
+              Cedula: usuarioBDD.agenteID
+            }
+          },
+          usuario: {
+            connect: {
+              id: usuarioBDD.id
+            }
+          },
+          tokenSession: tokenSession,
+          hora_entrada: fechaHoraFormateada,
+          cedula: usuarioBDD.agente.Cedula,
+          nombreAgente: usuarioBDD.agente.Apellido_Nombre,
+          grado: usuarioBDD.agente.Grado,
+          Rol: usuarioBDD.Rol,
+          accionRealizada: "Ingreso"
+        }
+      }),
+      prisma.usuario.update({
+        where: {
+          id: usuarioBDD.id
         },
-        usuario: {
-          connect: {
-            id: usuarioBDD.id
-          }
-        },
-        tokenSession: tokenSession,
-        hora_entrada: fechaHoraFormateada,
-        cedula: usuarioBDD.agente.Cedula,
-        nombreAgente: usuarioBDD.agente.Apellido_Nombre,
-        grado: usuarioBDD.agente.Grado,
-        Rol: usuarioBDD.Rol,
-        accionRealizada: "Ingreso"
-      }
-    });
+        data: {
+          tokenSession: tokenSession
+        }
+      })
+    ]);
 
     const token = generarJWT(usuarioBDD.id, usuarioBDD.Rol)
 
@@ -98,6 +107,7 @@ export const login = async (req, res) => {
     res.status(500).json({ msg: "Error al logear el usuario" });
   }
 };
+
 
 // Solicitud para el registro un nuevo usuario
 export const solicitudRegistro = async (req, res) => {
@@ -584,15 +594,18 @@ export const logout = async (req, res) => {
       return res.status(400).json({ msg: "Lo sentimos, token session invalido" });
     }
 
-    // Buscar al usuario por el token en la base de datos
-    const usuarioBDD = await prisma.mapeo.findFirst({
+    // Buscar el mapeo por el token en la base de datos
+    const mapeoBDD = await prisma.mapeo.findFirst({
       where: {
         tokenSession: tokenSession,
       },
+      include: {
+        usuario: true // Incluir los datos del usuario relacionado
+      }
     });
 
-    // Verificar si el usuario no existe o si su token es nulo
-    if (!usuarioBDD || !usuarioBDD.tokenSession) {
+    // Verificar si el mapeo no existe o si su token es nulo
+    if (!mapeoBDD || !mapeoBDD.tokenSession) {
       return res.status(404).json({ msg: "El token de session no existe" });
     }
 
@@ -611,25 +624,26 @@ export const logout = async (req, res) => {
 
     const fechaHoraFormateada = fechaHoraSalidaDate.toLocaleString("es-EC", opcionesFormato);
 
-    // Actualizar la hora de salida del usuario en la tabla Mapeo
-    await prisma.mapeo.update({
-      where: {
-        tokenSession: tokenSession,
-      },
-      data: {
-        hora_salida: fechaHoraFormateada,
-      },
-    });
-
-    // Inhabilitar el tokenSession después del cierre de sesión
-    await prisma.mapeo.update({
-      where: {
-        tokenSession: tokenSession,
-      },
-      data: {
-        tokenSession: null, // Establecer tokenSession a null
-      },
-    });
+    // Actualizar la hora de salida y el tokenSession en las tablas Mapeo y Usuario
+    await prisma.$transaction([
+      prisma.mapeo.update({
+        where: {
+          tokenSession: tokenSession,
+        },
+        data: {
+          hora_salida: fechaHoraFormateada,
+          tokenSession: null, // Establecer tokenSession a null en la tabla Mapeo
+        },
+      }),
+      prisma.usuario.update({
+        where: {
+          id: mapeoBDD.usuario.id
+        },
+        data: {
+          tokenSession: null // Establecer tokenSession a null en la tabla Usuario
+        }
+      })
+    ]);
 
     // Enviar una respuesta exitosa con los detalles del usuario
     res.status(200).json({

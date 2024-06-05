@@ -55,6 +55,7 @@ model Usuario {
   Rol        RolEnum
   token     String?   
   confirmEmail Boolean   @default(false)
+  tokenSession    String?   @unique
   mapeos       Mapeo[]   // Relación uno a muchos con Mapeo
 }
 
