@@ -90,11 +90,12 @@ export const login = async (req, res) => {
     const token = generarJWT(usuarioBDD.id, usuarioBDD.Rol)
 
     // Extraer los campos necesarios del usuario para la respuesta
-    const { nombre, Rol, agenteID, agente, id } = usuarioBDD;
+    const { nombre, Rol, agenteID, agente, id} = usuarioBDD;
     const grado = agente.Grado; // Suponiendo que "grado" es un campo en la tabla Agente
     // Enviar una respuesta exitosa con los detalles del usuario
     res.status(200).json({
       token,
+      tokenSession,
       agenteID,
       grado,
       nombre,
@@ -105,22 +106,6 @@ export const login = async (req, res) => {
     // Si hay algún error, enviar una respuesta de error
     console.error('Error al logear el usuario:', error);
     res.status(500).json({ msg: "Error al logear el usuario" });
-  }
-};
-
-
-// Solicitud para el registro un nuevo usuario
-export const solicitudRegistro = async (req, res) => {
-  const { cedula, nombre, email, mensaje } = req.body;
-  try {
-    // Envía un correo electrónico al administrador para notificar la solicitud de registro
-    await sendMailToAdmin(cedula, email, nombre, mensaje);
-
-    // Envía una respuesta de éxito al cliente
-    res.status(200).json({ msg: "Tu solicitud de registro ha sido enviada correctamente. Espera la confirmación del administrador." });
-  } catch (error) {
-    console.error("Error al procesar la solicitud de registro:", error);
-    res.status(500).json({ msg: "Ocurrió un error al procesar la solicitud de registro" });
   }
 };
 
@@ -222,6 +207,20 @@ export const registro = async (req, res) => {
   }
 };
 
+// Solicitud para el registro un nuevo usuario
+export const solicitudRegistro = async (req, res) => {
+  const { cedula, nombre, email, mensaje } = req.body;
+  try {
+    // Envía un correo electrónico al administrador para notificar la solicitud de registro
+    await sendMailToAdmin(cedula, email, nombre, mensaje);
+
+    // Envía una respuesta de éxito al cliente
+    res.status(200).json({ msg: "Tu solicitud de registro ha sido enviada correctamente. Espera la confirmación del administrador." });
+  } catch (error) {
+    console.error("Error al procesar la solicitud de registro:", error);
+    res.status(500).json({ msg: "Ocurrió un error al procesar la solicitud de registro" });
+  }
+};
 // Detalle de un usuario
 export const detalleUsuario = async (req, res) => {
 
