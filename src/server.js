@@ -53,9 +53,9 @@ const initializeDefaultUser = async () => {
             }
           }
         });
-        console.log('Usuario y agente por defecto creado.');
+        console.log('Usuario por defecto creado.');
       } else {
-        console.log('Usuario y agente por defecto ya existen. No se creó ningún usuario ni agente.');
+        console.log('Usuario por defecto ya existe.');
       }
     } catch (error) {
       console.error('Error al inicializar el usuario y agente por defecto:', error);
