@@ -6,17 +6,6 @@ export const registrarAgente = async (req, res) => {
   let agentesNuevos = req.body; // Usamos 'let' en lugar de 'const'
 
   try {
-    // Verificar si el agente ya existe basado en la cédula
-    const agenteExistente = await prisma.agente.findUnique({
-      where: {
-        Cedula: agentesNuevos.Cedula,
-      },
-    });
-
-    if (agenteExistente) {
-      return res.status(400).json({ msg: 'La cédula ya está registrada' });
-    }
-
     // Consultar el último valor de ORD en la tabla de agentes
     const ultimoAgente = await prisma.agente.findFirst({
       orderBy: { ORD: 'desc' },
@@ -30,16 +19,17 @@ export const registrarAgente = async (req, res) => {
     } else {
       nuevoORD = ultimoAgente.ORD + 1;
     }
+
     const parseNumericFields = (field) => typeof field === 'number' ? field : parseInt(field, 10);
 
     // Configurar los valores predeterminados
     agentesNuevos = {
       ...agentesNuevos,
+      ORD: nuevoORD,
       Direcion_Unidad: 'CIBERPOL',
       Zona: 'ZONA 9',
       SubZona: 'DMQ',
       Distrito_Canton: 'EUGENIO ESPEJO / QUITO',
-      ORD: nuevoORD,
       Terno: parseNumericFields(agentesNuevos.Terno),
       Camisa: parseNumericFields(agentesNuevos.Camisa),
       Calzado: parseNumericFields(agentesNuevos.Calzado),
@@ -58,6 +48,7 @@ export const registrarAgente = async (req, res) => {
     res.status(500).send('Error al registrar al agente');
   }
 };
+
 
 // Detalle de un Agente
 export const detalleAgente = async (req, res) => {
