@@ -22,4 +22,4 @@ export const crearTokenSession = () => {
       tokenGenerated += Math.random().toString(36).slice(2);
     }
     return tokenGenerated;
-  }
+}

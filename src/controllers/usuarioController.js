@@ -3,7 +3,6 @@ import { sendMailToUser, sendMailToResetPassword, sendMailToAdmin } from '../con
 import { generarJWT, VDToken } from "../helpers/crearJWT.js"
 import { PrismaClient } from '@prisma/client';
 
-
 const prisma = new PrismaClient();
 
 //Login de un usuario

@@ -62,18 +62,12 @@ const initializeDefaultUser = async () => {
     }
 };
 
-
-
 // Configuraciones 
 app.set('port',process.env.port || 3000)
 app.use(cors())
 
 // Middlewares 
 app.use(express.json())
-
-
-// Variables globales
-
 
 // Rutas 
 app.use('/api', usuarioRouters);
@@ -85,9 +79,8 @@ app.use('/api', mapeoRouters);
 initializeDefaultUser();
   
 app.get('/',(req,res)=>{
-    res.send("Server on")
+  res.send("Server on")
 })
-
 
 // Exportar la instancia de express por medio de app
 export default  app
