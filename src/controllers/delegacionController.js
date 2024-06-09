@@ -60,7 +60,10 @@ export const registrarDelegacion = async (req, res) => {
             });
 
             if (delegacionExistentePorInvestigacionPrevia) {
-                return res.status(400).json({ msg: "El número de investigación previa ya está registrado" });
+                // Si la delegación ya existe, obtenemos el nombre del agente asociado
+                const gradoAgente = delegacionExistentePorInvestigacionPrevia.grado_agente;
+                const nombreAgente = delegacionExistentePorInvestigacionPrevia.apellidos_nombres_agente;
+                return res.status(400).json({ msg: `La delegación ya está registrada y asiganada al agente: ${gradoAgente}${nombreAgente}` });
             }
         }
 
@@ -72,7 +75,10 @@ export const registrarDelegacion = async (req, res) => {
             });
 
             if (delegacionExistentePorInstruccionFiscal) {
-                return res.status(400).json({ msg: "El número de instrucción fiscal ya está registrado" });
+                // Si la delegación ya existe, obtenemos el nombre del agente asociado
+                const gradoAgente = delegacionExistentePorInstruccionFiscal.grado_agente;
+                const nombreAgente = delegacionExistentePorInstruccionFiscal.apellidos_nombres_agente;
+                return res.status(400).json({ msg: `La delegación ya está registrada y asiganada al agente: ${gradoAgente}${nombreAgente}` });
             }
         }
 
