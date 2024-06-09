@@ -354,14 +354,13 @@ const reordenarUsuarios = async () => {
 };
 // Eliminar un usuario
 export const eliminarUsuario = async (req, res) => {
-
   const { id } = req.params;
 
   try {
-
+    // Encontrar el usuario
     const usuarioEliminado = await prisma.usuario.findUnique({
       where: {
-        id: Number(id),
+        id: parseInt(id),
       },
     });
 
@@ -369,12 +368,24 @@ export const eliminarUsuario = async (req, res) => {
       return res.status(404).json({ msg: 'Usuario no encontrado' });
     }
 
-    await prisma.usuario.delete({
+    // Desasociar todos los mapeos relacionados con el usuario
+    await prisma.mapeo.updateMany({
       where: {
-        id: Number(id),
+        usuarioId: parseInt(id),
+      },
+      data: {
+        usuarioId: null,
       },
     });
 
+    // Eliminar el usuario
+    await prisma.usuario.delete({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    // Llamada a reordenarUsuarios si es necesario
     await reordenarUsuarios();
 
     res.status(200).json({ msg: 'Usuario eliminado correctamente', usuario: usuarioEliminado });

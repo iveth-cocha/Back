@@ -70,10 +70,10 @@ model Mapeo {
   hora_salida     String?
   tokenSession    String?   @unique
   accionRealizada String    @db.VarChar(255)
-  agente          Agente    @relation(fields: [agenteID], references: [Cedula])
+  agente          Agente    @relation(fields: [agenteID], references: [Cedula], onDelete: Cascade)
   agenteID        String
-  usuario         Usuario   @relation(fields: [usuarioId], references: [id])
-  usuarioId       Int
+  usuario         Usuario?  @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+  usuarioId       Int?
 }
 enum RolEnum {
   Administrador

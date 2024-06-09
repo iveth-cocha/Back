@@ -294,34 +294,43 @@ try {
 
 // Eliminar una delegacion
 export const eliminarDelegacion = async (req, res) => {
-    
+
+    function bigIntToString(obj) {
+        return JSON.parse(JSON.stringify(obj, (key, value) =>
+            typeof value === 'bigint' ? value.toString() : value
+        ));
+    }
+
     const { id } = req.params;
 
     try {
-
         const delegacionEliminada = await prisma.delegacion.findUnique({
             where: {
-              id: Number(id),
+                id: Number(id),
             },
         });
 
         if (!delegacionEliminada) {
-            return res.status(404).json({ msg: 'Delegacion no encontrada' });
+            return res.status(404).json({ msg: 'Delegación no encontrada' });
         }
 
         await prisma.delegacion.delete({
             where: {
-              id: Number(id),
+                id: Number(id),
             },
         });
 
-        res.status(200).json({ msg: 'Delegacion eliminada correctamente', delegacion: delegacionEliminada });
+        res.status(200).json({ 
+            msg: 'Delegación eliminada correctamente', 
+            delegacion: bigIntToString(delegacionEliminada) 
+        });
     } catch (error) {
         // Si hay algún error, envía una respuesta de error
         console.error('Error al eliminar la delegación:', error);
         res.status(500).send('Error al eliminar la delegación');
     }
 };
+
 
 // Listar delegaciones
 export const listarDelegaciones = async (req, res) => {

@@ -26,7 +26,7 @@ const initializeDefaultUser = async () => {
 
       // Verificar si el agente por defecto ya existe
       const defaultAgent = await prisma.agente.findUnique({
-        where: { Cedula: '0000000000' }
+        where: { Cedula: '1728141571' }
       });
   
       if (!defaultUser && !defaultAgent) {
@@ -41,10 +41,10 @@ const initializeDefaultUser = async () => {
             confirmEmail: true,
             agente: {
               create: {
-                Cedula: '0000000000',
+                Cedula: '1728141571',
                 Apellido_Nombre: 'Iveth Cocha',
                 Grado: 'Poli.',
-                FechaNacimiento:'00/00/0000',
+                FechaNacimiento:'16/11/2001',
                 Terno: 25,
                 Camisa: 15,
                 Calzado: 40,
