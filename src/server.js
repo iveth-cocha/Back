@@ -43,7 +43,7 @@ const initializeDefaultUser = async () => {
               create: {
                 Cedula: '1728141571',
                 Apellido_Nombre: 'Iveth Cocha',
-                Grado: 'Poli.',
+                Grado: 'POLI.',
                 FechaNacimiento:'16/11/2001',
                 Terno: 25,
                 Camisa: 15,

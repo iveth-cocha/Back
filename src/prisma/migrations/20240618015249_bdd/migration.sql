@@ -46,8 +46,9 @@ CREATE TABLE "Usuario" (
     "email" VARCHAR(255) NOT NULL,
     "password" VARCHAR(255) NOT NULL,
     "Rol" "RolEnum" NOT NULL,
-    "tokenPassword" TEXT,
+    "token" TEXT,
     "confirmEmail" BOOLEAN NOT NULL DEFAULT false,
+    "tokenSession" TEXT,
 
     CONSTRAINT "Usuario_pkey" PRIMARY KEY ("id")
 );
@@ -61,10 +62,10 @@ CREATE TABLE "Mapeo" (
     "Rol" "RolEnum" NOT NULL,
     "hora_entrada" TEXT,
     "hora_salida" TEXT,
-    "tokenSession" VARCHAR(255) NOT NULL,
+    "tokenSession" TEXT,
     "accionRealizada" VARCHAR(255) NOT NULL,
     "agenteID" TEXT NOT NULL,
-    "usuarioId" INTEGER NOT NULL,
+    "usuarioId" INTEGER,
 
     CONSTRAINT "Mapeo_pkey" PRIMARY KEY ("id")
 );
@@ -173,11 +174,17 @@ CREATE UNIQUE INDEX "Agente_Cedula_key" ON "Agente"("Cedula");
 -- CreateIndex
 CREATE UNIQUE INDEX "Usuario_email_key" ON "Usuario"("email");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "Usuario_tokenSession_key" ON "Usuario"("tokenSession");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Mapeo_tokenSession_key" ON "Mapeo"("tokenSession");
+
 -- AddForeignKey
 ALTER TABLE "Usuario" ADD CONSTRAINT "Usuario_agenteID_fkey" FOREIGN KEY ("agenteID") REFERENCES "Agente"("Cedula") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Mapeo" ADD CONSTRAINT "Mapeo_agenteID_fkey" FOREIGN KEY ("agenteID") REFERENCES "Agente"("Cedula") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Mapeo" ADD CONSTRAINT "Mapeo_agenteID_fkey" FOREIGN KEY ("agenteID") REFERENCES "Agente"("Cedula") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Mapeo" ADD CONSTRAINT "Mapeo_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Mapeo" ADD CONSTRAINT "Mapeo_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE SET NULL ON UPDATE CASCADE;
