@@ -133,7 +133,7 @@ model Delegacion {
   no_detenidos_producto_investigacion        Int?
   apellidos_nombres_detenidos_producto       String?    @db.VarChar(255)
   allanamientos_numero                       Int?
-  recuperacion_bienes_evidencias             Int?
+  recuperacion_bienes_evidencias             String?
   recuperacion_automotores                   Int?
   recuperacion_otros                         Int?
   peritajes                                  Int?

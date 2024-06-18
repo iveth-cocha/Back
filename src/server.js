@@ -19,7 +19,7 @@ const prisma = new PrismaClient();
 const initializeDefaultUser = async () => {
     try {
       // Verificar si el usuario por defecto ya existe
-      const defaultUserEmail = 'Iveth.cocha.2001@gmail.com';
+      const defaultUserEmail = 'iveth.cocha.2001@gmail.com';
       const defaultUser = await prisma.usuario.findUnique({
         where: { email: defaultUserEmail }
       });
@@ -35,7 +35,7 @@ const initializeDefaultUser = async () => {
         await prisma.usuario.create({
           data: {
             nombre: 'Iveth Cocha',
-            email: 'Iveth.cocha.2001@gmail.com',
+            email: 'iveth.cocha.2001@gmail.com',
             password: hashedPassword,
             Rol: 'Administrador',
             confirmEmail: true,
