@@ -2,11 +2,6 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 
-const grados = ['TCNL.', 'MAYR.', 'CPTN.', 'TNTE.', 'SBTE.', 'KDTE.', 'SBOM.', 'SBOP.', 'SBOS.', 'SGOP.', 'SGOS.', 'CBOP.', 'CBOS.', 'POLI.'];
-
-// Función para obtener el índice de grado
-const obtenerIndiceGrado = (grado) => grados.indexOf(grado);
-
 // Registro un nuevo Agente
 export const registrarAgente = async (req, res) => {
   let agentesNuevos = req.body; // Usamos 'let' en lugar de 'const'
