@@ -12,36 +12,37 @@ export const registrarDelegacion = async (req, res) => {
 
     const datosDelegacion = req.body;
 
-    try {  
+    try {
+
         const añoActual = new Date().getFullYear();
 
         const ultimoOrden = await prisma.delegacion.findFirst({
             select: {
-                orden: true,
-                anio_ingreso: true
+                orden: true
+            },
+            where: {
+                anio_ingreso: añoActual
             },
             orderBy: {
                 orden: 'desc'
             }
         });
-        
-        let ordenInicial = 1;
-        
-        if (ultimoOrden && ultimoOrden.anio_ingreso === añoActual) {
-            ordenInicial = ultimoOrden.orden + 1;
+
+        let nuevoOrden = 1;
+
+        if (ultimoOrden) {
+            nuevoOrden = ultimoOrden.orden + 1;
         }
-        
-        const nuevoOrden = Math.max(ultimoOrden ? ultimoOrden.orden + 1 : 1, ordenInicial);
 
         const { numero_investigacion_previa, numero_instruccion_fiscal } = datosDelegacion;
 
         // Validar que al menos uno de los campos esté presente
         if ((!numero_investigacion_previa || numero_investigacion_previa === null) &&
-        (!numero_instruccion_fiscal || numero_instruccion_fiscal.trim() === "")) {
-        return res.status(400).json({ msg: "Debe proporcionar al menos un número de investigación previa o instrucción fiscal" });
+            (!numero_instruccion_fiscal || numero_instruccion_fiscal.trim() === "")) {
+            return res.status(400).json({ msg: "Debe proporcionar al menos un número de investigación previa o instrucción fiscal" });
         }
 
-       // Convertir ambos valores a cadenas de texto para la comparación
+        // Convertir ambos valores a cadenas de texto para la comparación
         const numeroInvestigacionPreviaStr = numero_investigacion_previa !== null ? String(numero_investigacion_previa) : null;
         const numeroInstruccionFiscalStr = numero_instruccion_fiscal ? numero_instruccion_fiscal.trim() : "";
 
@@ -148,19 +149,19 @@ export const registrarDelegacion = async (req, res) => {
                 entidad_financiera: datosDelegacion.entidad_financiera,
             }
         });
-        
+
         // Envía una respuesta indicando que se ha creado la delegación con éxito
-        res.status(200).json({ 
-            msg: 'Delegación agregada correctamente', 
+        res.status(200).json({
+            msg: 'Delegación agregada correctamente',
             delegacion: bigIntToString(nuevaDelegacion) // Convertir BigInt a string
-        });  
-     } catch (error) {
+        });
+    } catch (error) {
         // Si hay algún error, envía una respuesta de error
         console.error('Error al registrar la delegación:', error);
         res.status(500).send('Error al registrar la delegación');
     }
 };
- 
+
 // Detalle de una delegacion
 export const detalleDelegacion = async (req, res) => {
     const { id } = req.params; // Obtener el id del parámetro de la ruta
@@ -171,7 +172,7 @@ export const detalleDelegacion = async (req, res) => {
                 id: parseInt(id),
             },
             select: {
-                id:true,
+                id: true,
                 numero_investigacion_previa: true,
                 numero_instruccion_fiscal: true,
                 mes_ingreso: true,
@@ -241,8 +242,8 @@ export const detalleDelegacion = async (req, res) => {
             return res.status(404).json({ msg: `Lo sentimos, no se encontró la delegación con el ID ${id}` });
         }
 
-         // Convertir los valores de BigInt a String o a un tipo de dato compatible directamente en el objeto delegacionDetalle
-         const delegacionDetalleString = {
+        // Convertir los valores de BigInt a String o a un tipo de dato compatible directamente en el objeto delegacionDetalle
+        const delegacionDetalleString = {
             ...delegacionDetalle,
             numero_investigacion_previa: delegacionDetalle.numero_investigacion_previa.toString(), // Convertir BigInt a String
             // Si hay otros valores BigInt, conviértelos aquí
@@ -259,37 +260,37 @@ export const detalleDelegacion = async (req, res) => {
 // Actualizar una delegacion
 export const actualizarDelegacion = async (req, res) => {
 
-const { id } = req.params;
-const datosActualizadosDelegacion = req.body;
+    const { id } = req.params;
+    const datosActualizadosDelegacion = req.body;
 
-try {
-    
-    const delegacion = await prisma.delegacion.findUnique({
-        where: {
-            id: parseInt(id),
-        },
-    });
+    try {
 
-    // Verificar si se encontró al usuario
-    if (!delegacion) {
-        return res.status(404).json({ msg: `Lo sentimos, no se encontró la delegacion con ID ${id}` });
+        const delegacion = await prisma.delegacion.findUnique({
+            where: {
+                id: parseInt(id),
+            },
+        });
+
+        // Verificar si se encontró al usuario
+        if (!delegacion) {
+            return res.status(404).json({ msg: `Lo sentimos, no se encontró la delegacion con ID ${id}` });
+        }
+
+        // Actualizar el la delegacion
+        await prisma.delegacion.update({
+            where: {
+                id: parseInt(id),
+            },
+            data: datosActualizadosDelegacion // Actualizar con los datos proporcionados en el cuerpo de la solicitud
+        });
+
+        res.status(200).json({ msg: "Delegación actualizada correctamente" });
+
+    } catch (error) {
+        // Si hay algún error, envía una respuesta de error
+        console.error('Error al actualizar la delegación:', error);
+        res.status(500).send('Error al actualizar la delegación');
     }
-
-    // Actualizar el la delegacion
-    await prisma.delegacion.update({
-        where: {
-            id: parseInt(id),
-        },
-        data: datosActualizadosDelegacion // Actualizar con los datos proporcionados en el cuerpo de la solicitud
-    });
-
-    res.status(200).json({ msg: "Delegación actualizada correctamente" });
-
-} catch (error) {
-    // Si hay algún error, envía una respuesta de error
-    console.error('Error al actualizar la delegación:', error);
-    res.status(500).send('Error al actualizar la delegación');
-}
 };
 
 // Eliminar una delegacion
@@ -320,9 +321,9 @@ export const eliminarDelegacion = async (req, res) => {
             },
         });
 
-        res.status(200).json({ 
-            msg: 'Delegación eliminada correctamente', 
-            delegacion: bigIntToString(delegacionEliminada) 
+        res.status(200).json({
+            msg: 'Delegación eliminada correctamente',
+            delegacion: bigIntToString(delegacionEliminada)
         });
     } catch (error) {
         // Si hay algún error, envía una respuesta de error
@@ -331,19 +332,23 @@ export const eliminarDelegacion = async (req, res) => {
     }
 };
 
-
 // Listar delegaciones
 export const listarDelegaciones = async (req, res) => {
     try {
-        const delegaciones = await prisma.delegacion.findMany();
-        
+        const delegaciones = await prisma.delegacion.findMany({
+            orderBy: [
+                { anio_ingreso: 'desc' }, // Primero ordenar por el año en orden descendente
+                { orden: 'asc' }  // Ordenar por el campo 'orden' en orden ascendente
+            ]
+        });
+
         // Convertir los valores de BigInt a String o a un tipo de dato compatible
         const delegacionesJSON = delegaciones.map(delegacion => ({
             ...delegacion,
             numero_investigacion_previa: delegacion.numero_investigacion_previa !== null ? delegacion.numero_investigacion_previa.toString() : null,
             // Si hay otros valores BigInt, conviértelos aquí de manera similar
         }));
-        
+
         res.status(200).json(delegacionesJSON);
     } catch (error) {
         // Si hay algún error, envía una respuesta de error
@@ -352,4 +357,4 @@ export const listarDelegaciones = async (req, res) => {
     }
 };
 
-  
+
