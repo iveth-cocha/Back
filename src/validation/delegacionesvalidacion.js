@@ -2,34 +2,6 @@ import { body, check } from 'express-validator'
 import {validacionResultado} from '../middlewares/validacionResultado.js'
 
 export const RegistroDV = [
-    body('numero_investigacion_previa')
-    .if((value, { req }) => req.body.numero_instruccion_fiscal === undefined || req.body.numero_instruccion_fiscal.trim() === '')
-    .exists().withMessage('El campo numero investigacion previa es obligatorio si el campo numero instruccion fiscal está vacío')
-    .bail() // Detiene las siguientes validaciones si la anterior falla
-    .notEmpty().withMessage('El campo numero investigacion previa no puede estar vacío'),
-    body('numero_investigacion_previa')
-    .optional() // Asegura que las siguientes validaciones se apliquen si el campo está presente
-    .isNumeric().withMessage('El campo numero investigacion previa debe de contener solo números')
-    .isLength({ min: 15, max: 15 }).withMessage('El campo numero investigacion previa debe de contener 15 números')
-    .customSanitizer(value => typeof value === 'string' ? value.trim() : value),
-
-    body('numero_instruccion_fiscal')
-    .if((value, { req }) => req.body.numero_investigacion_previa === undefined || req.body.numero_investigacion_previa.trim() === '')
-    .exists().withMessage('El campo numero instruccion fiscal es obligatorio si el campo numero investigacion previa está vacío')
-    .bail() // Detiene las siguientes validaciones si la anterior falla
-    .notEmpty().withMessage('El campo numero instruccion fiscal no puede estar vacío'),
-    body('numero_instruccion_fiscal')
-    .optional() // Asegura que las siguientes validaciones se apliquen si el campo está presente
-    .isLength({ min: 5 }).withMessage('El campo numero instruccion fiscal debe de contener al menos 5 caracteres')
-    .customSanitizer(value => value?.trim()),
-
-    // Validación personalizada para asegurar que al menos uno de los dos campos esté lleno
-    body().custom((value, { req }) => {
-        if (!req.body.numero_investigacion_previa && !req.body.numero_instruccion_fiscal) {
-            throw new Error('Al menos uno de los campos numero investigacion previa o numero instruccion fiscal debe estar lleno');
-        }
-        return true;
-    }),
 
     body('zona')
     .exists().withMessage('El campo zona es obligatorio')
@@ -218,3 +190,4 @@ export const RegistroDV = [
         validacionResultado(req, res, next);
     }
 ]
+

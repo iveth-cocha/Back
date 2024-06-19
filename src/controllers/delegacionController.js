@@ -245,8 +245,8 @@ export const detalleDelegacion = async (req, res) => {
         // Convertir los valores de BigInt a String o a un tipo de dato compatible directamente en el objeto delegacionDetalle
         const delegacionDetalleString = {
             ...delegacionDetalle,
-            numero_investigacion_previa: delegacionDetalle.numero_investigacion_previa.toString(), // Convertir BigInt a String
-            // Si hay otros valores BigInt, conviértelos aquí
+            numero_investigacion_previa: delegacionDetalle.numero_investigacion_previa ? delegacionDetalle.numero_investigacion_previa.toString() : null,
+            // Añade más conversiones aquí según sea necesario
         };
         // Enviar la delegación como respuesta JSON
         res.status(200).json(delegacionDetalleString);

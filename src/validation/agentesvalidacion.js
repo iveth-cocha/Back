@@ -112,8 +112,8 @@ const campoNumericoRangoOptional = (campo, min, max) => [
 
 
 export const ActualizarAGV = [
-  ...campoOptionalExacto('Grado', 5),
   ...campoOptional('Apellido_Nombre', 10, 100),
+  ...campoOptionalExacto('Grado', 5),
   ...campoNumericoOptional('Cedula', 10),
   ...campoOptional('PaseDNTH', 20, 100),
   ...campoOptional('Funcion', 20, 100),
