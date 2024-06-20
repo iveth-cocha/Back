@@ -1,7 +1,7 @@
 import { body, check } from 'express-validator';
 import { validacionResultado } from '../middlewares/validacionResultado.js';
 
-// Validaciones comunes
+//===== Validaciones para campos obligatorios=====
 const campoObligatorioExacto = (campo, longitud) => [
   body(campo)
     .exists().withMessage(`El campo ${campo} es obligatorio`)
@@ -36,66 +36,24 @@ const campoNumericoRangoObligatorio = (campo, min, max) => [
     .trim()
 ];
 
-export const RegistroAGV = [
-    ...campoObligatorioExacto('Grado', 5),
-    ...campoObligatorio('Apellido_Nombre', 10, 100),
-    ...campoNumericoObligatorio('Cedula', 10),
-    ...campoObligatorio('PaseDNTH', 20, 100),
-    ...campoObligatorio('Funcion', 20, 100),
-    ...campoObligatorio('Titulo', 7, 100),
-    ...campoObligatorio('IdiomaExtranjero', 5, 100),
-    ...campoObligatorio('Residencia', 8, 100),
-    ...campoObligatorio('Estado_Civil', 7, 100),
-    ...campoObligatorio('FechaNacimiento', 10, 10),
-    ...campoObligatorio('Genero', 8, 100),
-    ...campoNumericoObligatorio('Telefono', 10),
-    ...campoObligatorio('NombresFamiliar', 6, 100),
-    ...campoObligatorio('Parentesco', 5, 100),
-    ...campoNumericoRangoObligatorio('TelefonoFamiliar', 7, 10),
-    ...campoNumericoObligatorio('Terno', 2),
-    ...campoNumericoObligatorio('Camisa', 2),
-    ...campoNumericoObligatorio('Calzado', 2),
-    ...campoNumericoObligatorio('Cabeza', 2),
-  
-    body('Email')
-      .exists().withMessage('El campo correo electrónico es obligatorio')
-      .notEmpty().withMessage('El campo correo electrónico no puede estar vacío')
-      .custom(value => {
-        // Verificar si el correo electrónico tiene el formato correcto usando una expresión regular
-        if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,})+$/.test(value)) {
-          throw new Error('El campo correo electrónico no es una dirección de correo electrónico válida');
-        }
-        return true;
-      })
-      .trim(),
-  
-    (req, res, next) => {
-      validacionResultado(req, res, next);
-    }
-  ];
-  
-
-// Validaciones para actualizar agente
+//===== Validaciones para campos opcionales=====
 const campoOptionalExacto = (campo, longitud) => [
   body(campo)
-    .optional()
-    .notEmpty().withMessage(`El campo ${campo} no puede estar vacío`)
+    .optional({ checkFalsy: true })
     .isLength({ min: longitud, max: longitud }).withMessage(`El campo ${campo} debe contener ${longitud} caracteres`)
     .trim()
 ];
 
 const campoOptional = (campo, min, max) => [
   body(campo)
-    .optional()
-    .notEmpty().withMessage(`El campo ${campo} no puede estar vacío`)
+    .optional({ checkFalsy: true })
     .isLength({ min, max }).withMessage(`El campo ${campo} debe contener entre ${min} y ${max} caracteres`)
     .trim()
 ];
 
 const campoNumericoOptional = (campo, longitud) => [
   check(campo)
-    .optional()
-    .notEmpty().withMessage(`El campo ${campo} no puede estar vacío`)
+    .optional({ checkFalsy: true })
     .isLength({ min: longitud, max: longitud }).withMessage(`El campo ${campo} debe contener ${longitud} números`)
     .isNumeric().withMessage(`El campo ${campo} debe contener solo números`)
     .trim()
@@ -103,11 +61,54 @@ const campoNumericoOptional = (campo, longitud) => [
 
 const campoNumericoRangoOptional = (campo, min, max) => [
   check(campo)
-    .optional()
-    .notEmpty().withMessage(`El campo ${campo} no puede estar vacío`)
+    .optional({ checkFalsy: true })
     .isLength({ min, max }).withMessage(`El campo ${campo} debe contener entre ${min} y ${max} números`)
     .isNumeric().withMessage(`El campo ${campo} debe contener solo números`)
     .trim()
+];
+
+export const RegistroAGV = [
+  ...campoObligatorio('Apellido_Nombre', 10, 100),
+  ...campoObligatorioExacto('Grado', 5),
+  ...campoNumericoObligatorio('Cedula', 10),
+  ...campoObligatorio('PaseDNTH', 20, 100),
+  ...campoObligatorio('Funcion', 20, 100),
+  ...campoObligatorio('Titulo', 7, 100),
+  ...campoObligatorio('IdiomaExtranjero', 5, 100),
+  ...campoObligatorio('Residencia', 8, 100),
+  ...campoObligatorio('Estado_Civil', 7, 100),
+  ...campoObligatorio('FechaNacimiento', 10, 10),
+  ...campoObligatorio('Genero', 8, 10),
+  ...campoNumericoObligatorio('Telefono', 10),
+  ...campoObligatorio('NombresFamiliar', 6, 100),
+  ...campoObligatorio('Parentesco', 5, 100),
+  ...campoNumericoRangoObligatorio('TelefonoFamiliar', 7, 10),
+  ...campoNumericoObligatorio('Terno', 2),
+  ...campoNumericoObligatorio('Camisa', 2),
+  ...campoNumericoObligatorio('Calzado', 2),
+  ...campoNumericoObligatorio('Cabeza', 2),
+
+  ...campoOptional('Licencia', 1, 10),
+
+  ...campoOptional('Novedad', 0, 100),
+  ...campoOptional('Detalle', 0, 100),
+  ...campoOptional('Documento', 0, 100),
+
+  body('Email')
+    .exists().withMessage('El campo correo electrónico es obligatorio')
+    .notEmpty().withMessage('El campo correo electrónico no puede estar vacío')
+    .custom(value => {
+      // Verificar si el correo electrónico tiene el formato correcto usando una expresión regular
+      if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,})+$/.test(value)) {
+        throw new Error('El campo correo electrónico no es una dirección de correo electrónico válida');
+      }
+      return true;
+    })
+    .trim(),
+
+  (req, res, next) => {
+    validacionResultado(req, res, next);
+  }
 ];
 
 
@@ -132,8 +133,14 @@ export const ActualizarAGV = [
   ...campoNumericoOptional('Calzado', 2),
   ...campoNumericoOptional('Cabeza', 2),
 
+  ...campoOptional('Licencia', 1, 10),
+
+  ...campoOptional('Novedad', 0, 100),
+  ...campoOptional('Detalle', 0, 100),
+  ...campoOptional('Documento', 0, 100),
+
   body('Email')
-    .optional()
+    .exists().withMessage('El campo correo electrónico es obligatorio')
     .notEmpty().withMessage('El campo correo electrónico no puede estar vacío')
     .custom(value => {
       // Verificar si el correo electrónico tiene el formato correcto usando una expresión regular
