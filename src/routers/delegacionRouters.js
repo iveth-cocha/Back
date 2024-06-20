@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { registrarDelegacion,detalleDelegacion, actualizarDelegacion, eliminarDelegacion, listarDelegaciones} from '../controllers/delegacionController.js';
 import {checkRoleAuth} from '../middlewares/autenticacion.js'
-import {RegistroDV} from '../validation/delegacionesvalidacion.js'
+import {ActualizacionDV} from '../validation/delegacionesvalidacion.js'
 
 
 const router = Router();
@@ -13,7 +13,7 @@ router.post('/registro/delegacion', checkRoleAuth(['Administrador', 'Registrador
 router.get('/detalle/delegacion/:id', checkRoleAuth(['Administrador', 'Visualizador', 'Registrador']),  detalleDelegacion );
 
 // Ruta para actualizar una nueva delegacion:
-router.put('/actualizar/delegacion/:id', checkRoleAuth(['Administrador', 'Registrador']),  actualizarDelegacion );
+router.put('/actualizar/delegacion/:id', checkRoleAuth(['Administrador', 'Registrador']), ActualizacionDV, actualizarDelegacion );
 
 // Ruta para eliminar una nueva delegacion:
 router.delete('/eliminar/delegacion/:id', checkRoleAuth(['Administrador']), eliminarDelegacion);
