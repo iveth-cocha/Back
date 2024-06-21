@@ -9,6 +9,21 @@ const campoObligatorioExacto = (campo, longitud) => [
     .isLength({ min: longitud, max: longitud }).withMessage(`El campo ${campo} debe contener ${longitud} caracteres`)
     .trim()
 ];
+const campoObligatorioExactoBoxGrad = (campo, longitud) => [
+  body(campo)
+    .exists().withMessage(`El campo ${campo} es obligatorio`)
+    .notEmpty().withMessage(`El campo ${campo} no puede estar vacío`)
+    .isLength({ min: longitud, max: longitud }).withMessage(`El campo ${campo} debe contener ${longitud} caracteres`)
+    .trim()
+];
+const campoObligatorioExactoBoxGene = (campo, min, max) => [
+  body(campo)
+    .exists().withMessage(`El campo ${campo} es obligatorio`)
+    .notEmpty().withMessage(`El campo ${campo} no puede estar vacío`)
+    .isLength({ min, max }).withMessage(`El campo ${campo} debe contener entre ${min} y ${max} caracteres`)
+    .trim()
+];
+
 
 const campoObligatorio = (campo, min, max) => [
   body(campo)
@@ -69,16 +84,16 @@ const campoNumericoRangoOptional = (campo, min, max) => [
 
 export const RegistroAGV = [
   ...campoObligatorio('Apellido_Nombre', 10, 100),
-  ...campoObligatorioExacto('Grado', 5),
+  ...campoObligatorioExactoBoxGrad('Grado', 5),
   ...campoNumericoObligatorio('Cedula', 10),
   ...campoObligatorio('PaseDNTH', 20, 100),
   ...campoObligatorio('Funcion', 20, 100),
   ...campoObligatorio('Titulo', 7, 100),
   ...campoObligatorio('IdiomaExtranjero', 5, 100),
   ...campoObligatorio('Residencia', 8, 100),
-  ...campoObligatorio('Estado_Civil', 7, 100),
+  ...campoObligatorio('Estado_Civil', 5, 100),
   ...campoObligatorio('FechaNacimiento', 10, 10),
-  ...campoObligatorio('Genero', 8, 10),
+  ...campoObligatorioExactoBoxGene('Genero', 8, 10),
   ...campoNumericoObligatorio('Telefono', 10),
   ...campoObligatorio('NombresFamiliar', 6, 100),
   ...campoObligatorio('Parentesco', 5, 100),
@@ -90,9 +105,9 @@ export const RegistroAGV = [
 
   ...campoOptional('Licencia', 1, 10),
 
-  ...campoOptional('Novedad', 0, 100),
-  ...campoOptional('Detalle', 0, 100),
-  ...campoOptional('Documento', 0, 100),
+  ...campoOptional('Novedad', 1, 100),
+  ...campoOptional('Detalle', 1, 100),
+  ...campoOptional('Documento', 1, 100),
 
   body('Email')
     .exists().withMessage('El campo correo electrónico es obligatorio')
@@ -113,31 +128,31 @@ export const RegistroAGV = [
 
 
 export const ActualizarAGV = [
-  ...campoOptional('Apellido_Nombre', 10, 100),
-  ...campoOptionalExacto('Grado', 5),
-  ...campoNumericoOptional('Cedula', 10),
-  ...campoOptional('PaseDNTH', 20, 100),
-  ...campoOptional('Funcion', 20, 100),
-  ...campoOptional('Titulo', 7, 100),
-  ...campoOptional('IdiomaExtranjero', 5, 100),
-  ...campoOptional('Residencia', 8, 100),
-  ...campoOptional('Estado_Civil', 7, 100),
-  ...campoOptional('FechaNacimiento', 10, 10),
-  ...campoOptional('Genero', 8, 100),
-  ...campoNumericoOptional('Telefono', 10),
-  ...campoOptional('NombresFamiliar', 6, 100),
-  ...campoOptional('Parentesco', 5, 100),
-  ...campoNumericoRangoOptional('TelefonoFamiliar', 7, 10),
-  ...campoNumericoOptional('Terno', 2),
-  ...campoNumericoOptional('Camisa', 2),
-  ...campoNumericoOptional('Calzado', 2),
-  ...campoNumericoOptional('Cabeza', 2),
+  ...campoObligatorio('Apellido_Nombre', 10, 100),
+  ...campoObligatorioExactoBoxGrad('Grado', 5),
+  ...campoNumericoObligatorio('Cedula', 10),
+  ...campoObligatorio('PaseDNTH', 20, 100),
+  ...campoObligatorio('Funcion', 20, 100),
+  ...campoObligatorio('Titulo', 7, 100),
+  ...campoObligatorio('IdiomaExtranjero', 5, 100),
+  ...campoObligatorio('Residencia', 8, 100),
+  ...campoObligatorio('Estado_Civil', 5, 100),
+  ...campoObligatorio('FechaNacimiento', 10, 10),
+  ...campoObligatorioExactoBoxGene('Genero', 8, 10),
+  ...campoNumericoObligatorio('Telefono', 10),
+  ...campoObligatorio('NombresFamiliar', 6, 100),
+  ...campoObligatorio('Parentesco', 5, 100),
+  ...campoNumericoRangoObligatorio('TelefonoFamiliar', 7, 10),
+  ...campoNumericoObligatorio('Terno', 2),
+  ...campoNumericoObligatorio('Camisa', 2),
+  ...campoNumericoObligatorio('Calzado', 2),
+  ...campoNumericoObligatorio('Cabeza', 2),
 
   ...campoOptional('Licencia', 1, 10),
 
-  ...campoOptional('Novedad', 0, 100),
-  ...campoOptional('Detalle', 0, 100),
-  ...campoOptional('Documento', 0, 100),
+  ...campoOptional('Novedad', 1, 100),
+  ...campoOptional('Detalle', 1, 100),
+  ...campoOptional('Documento', 1, 100),
 
   body('Email')
     .exists().withMessage('El campo correo electrónico es obligatorio')

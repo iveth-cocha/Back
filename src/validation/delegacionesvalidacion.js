@@ -43,8 +43,7 @@ export const ActualizacionDV = [
     body('placa_vehiculo_involucrado')/*--------------------*/
         .optional({ checkFalsy: true }) // Hace que el campo no sea obligatorio
         .isLength({ min: 8, max: 8 }).withMessage('El campo placas del vehiculo involucrado debe de contener 8 caracteres')
-        .matches(/^[A-Za-z0-9-]*$/).withMessage('El campo placas del vehiculo involucrado solo puede contener letras, guines y números')
-        .customSanitizer(value => value?.trim()),
+        .matches(/^[A-Za-z0-9-]*$/).withMessage('El campo placas del vehiculo involucrado solo puede contener letras, guines y números'),
 
     body('plazo_otorgado_dias')
         .optional({ checkFalsy: true }) // Hace que el campo no sea obligatorio
