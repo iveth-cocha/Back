@@ -47,6 +47,6 @@ router.get('/recuperar-password/:token', comprobarTokenPasword);
 router.post('/nuevo-password/:token', contraseñaNuevaVU, nuevoPassword);
 
 // Ruta par actualizar obligatoriamente el password de un usuario
-router.put('/actualizar-contrasena/:token', contraseñaVU, actualizarContraseña);
+router.put('/actualizar-password/:token', contraseñaVU, actualizarContraseña);
 
 export default router;
