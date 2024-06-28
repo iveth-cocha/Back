@@ -46,7 +46,7 @@ router.get('/recuperar-password/:token', comprobarTokenPasword);
 // Ruta para crear un nuevo password de un usuario
 router.post('/nuevo-password/:token', contraseñaNuevaVU, nuevoPassword);
 
-// Ruta par actualizar obligatoriamente el password de un usuario
-router.put('/actualizar-password/:token', contraseñaVU, actualizarContraseña);
+// Ruta par crear el primer el password de un usuario
+router.put('/crear-password/:token', contraseñaVU, actualizarContraseña);
 
 export default router;
