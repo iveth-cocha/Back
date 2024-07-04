@@ -87,7 +87,7 @@ export const RegistroAGV = [
   ...campoObligatorioExactoBoxGrad('Grado', 5),
   ...campoNumericoObligatorio('Cedula', 10),
   ...campoObligatorio('PaseDNTH', 20, 100),
-  ...campoObligatorio('Funcion', 20, 100),
+  ...campoObligatorio('Funcion', 10, 100),
   ...campoObligatorio('Titulo', 7, 100),
   ...campoObligatorio('IdiomaExtranjero', 5, 100),
   ...campoObligatorio('Residencia', 8, 100),
@@ -104,7 +104,6 @@ export const RegistroAGV = [
   ...campoNumericoObligatorio('Cabeza', 2),
 
   ...campoOptional('Licencia', 1, 10),
-
   ...campoOptional('Novedad', 1, 100),
   ...campoOptional('Detalle', 1, 100),
   ...campoOptional('Documento', 1, 100),
@@ -132,7 +131,7 @@ export const ActualizarAGV = [
   ...campoObligatorioExactoBoxGrad('Grado', 5),
   ...campoNumericoObligatorio('Cedula', 10),
   ...campoObligatorio('PaseDNTH', 20, 100),
-  ...campoObligatorio('Funcion', 20, 100),
+  ...campoObligatorio('Funcion', 10, 100),
   ...campoObligatorio('Titulo', 7, 100),
   ...campoObligatorio('IdiomaExtranjero', 5, 100),
   ...campoObligatorio('Residencia', 8, 100),
@@ -149,7 +148,6 @@ export const ActualizarAGV = [
   ...campoNumericoObligatorio('Cabeza', 2),
 
   ...campoOptional('Licencia', 1, 10),
-
   ...campoOptional('Novedad', 1, 100),
   ...campoOptional('Detalle', 1, 100),
   ...campoOptional('Documento', 1, 100),

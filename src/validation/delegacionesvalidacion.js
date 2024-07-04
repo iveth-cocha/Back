@@ -13,7 +13,7 @@ export const ActualizacionDV = [
 
     body('edad_victima')
         .optional({ checkFalsy: true }) // Hace que el campo no sea obligatorio
-        .isLength({ min: 2, max: 2 }).withMessage('El campo sexo de la victima debe de contener 2 números')
+        .isLength({ min: 2, max: 2 }).withMessage('El campo edad de la victima debe de contener 2 números')
         .isNumeric().withMessage('El campo edad de la victima debe contener solo números'),
 
     body('apellidos_nombres_sospechoso')
@@ -64,7 +64,7 @@ export const ActualizacionDV = [
     body('numero_oficio_descargo')
         .optional({ checkFalsy: true }) // Hace que el campo no sea obligatorio
         .isLength({ min: 23 }).withMessage('El campo número de oficio de descargo debe de contener al menos 23 caracteres')
-        .matches(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s,]*$/).withMessage('El campo número de oficio de descargo solo acepta letras, comas y espacios')
+        .matches(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s,0-9-]*$/).withMessage('El campo número de oficio de descargo tiene caracteres incorrectos')
         .customSanitizer(value => value?.trim()),
 
     body('versiones')
@@ -74,8 +74,7 @@ export const ActualizacionDV = [
 
     body('reconocimientos_lugar_hechos')
         .optional({ checkFalsy: true }) // Hace que el campo no sea obligatorio
-        .matches(/^[A-Za-z0-9,\s]+$/).withMessage('El campo reconocimientos del lugar de los hechos debe contener solo letras, números y comas')
-        .customSanitizer(value => value?.trim()),
+        .matches(/^[A-Za-z0-9,\s]+$/).withMessage('El campo reconocimientos del lugar de los hechos debe contener solo letras, números y comas'),
 
     body('apellidos_nombres_detenidos_producto')
         .optional({ checkFalsy: true })

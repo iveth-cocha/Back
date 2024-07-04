@@ -199,7 +199,7 @@ export const registro = async (req, res) => {
     // Enviar correo electrónico de confirmación
     await sendMailToUser(email, token);
 
-    return res.status(200).json({ msg: "Revisa tu correo electrónico para confirmar tu cuenta" });
+    return res.status(200).json({ msg: "El registro del usuario se ha completado con éxito. Por favor, pídale que verifique su correo electrónico para proceder con el siguiente paso." });
   } catch (error) {
     console.error("Error al crear el nuevo usuario:", error);
     res.status(500).json({ msg: "Ocurrió un error al crear el nuevo usuario" });
@@ -214,7 +214,7 @@ export const solicitudRegistro = async (req, res) => {
     await sendMailToAdmin(cedula, email, nombre, mensaje);
 
     // Envía una respuesta de éxito al cliente
-    res.status(200).json({ msg: "Tu solicitud de registro ha sido enviada correctamente. Espera la confirmación del administrador." });
+    res.status(200).json({ msg: "Tu solicitud de registro ha sido enviada correctamente. Espera la respuesta por parte del administrador." });
   } catch (error) {
     console.error("Error al procesar la solicitud de registro:", error);
     res.status(500).json({ msg: "Ocurrió un error al procesar la solicitud de registro" });
@@ -246,7 +246,7 @@ export const detalleUsuario = async (req, res) => {
     });
 
     if (!usuario) {
-      return res.status(404).json({ msg: `Lo sentimos, no se encontró el usuario con ID ${id}` });
+      return res.status(404).json({ msg: `Lo sentimos, no se encontró el usuario con id ${id}` });
     }
 
     res.status(200).json({ msg: usuario });
@@ -321,7 +321,7 @@ export const actualizarUsuario = async (req, res) => {
 
     // Verificar si se encontró al usuario
     if (!usuario) {
-      return res.status(404).json({ msg: `Lo sentimos, no se encontró el usuario con ID ${id}` });
+      return res.status(404).json({ msg: `Lo sentimos, no se encontró el usuario con id ${id}` });
     }
 
     // Actualizar el perfil del usuario
@@ -428,7 +428,7 @@ export const confirmEmail = async (req, res) => {
 
     // Verificar si el email ya ha sido confirmado
     if (usuarioBDD.confirmEmail) {
-      return res.status(400).json({ msg: "El token ya ha sido confirmado" });
+      return res.status(400).json({ msg: "El correo electrónico ya ha sido confirmado" });
     }
 
     // Actualizar el token y establecer confirmEmail en true
@@ -504,7 +504,7 @@ export const comprobarTokenPasword = async (req, res) => {
       return res.status(404).json({ msg: "Lo sentimos, no se puede validar la cuenta" });
     }
 
-    res.status(200).json({ msg: "Token confirmado, ya puedes crear tu nueva contraseña" });
+    res.status(200).json({ msg: "Correo electrónico confirmado, ya puedes crear tu nueva contraseña" });
   } catch (error) {
     console.error("Error al confirmar el token de la contraseña:", error);
     res.status(500).json({ msg: "Ocurrió un error al confirmar el token de la contraseña" });

@@ -172,7 +172,7 @@ export const listarAgentes = async (req, res) => {
     const agentes = await prisma.agente.findMany();
     res.status(200).json(agentes);
   } catch (error) {
-    console.error('Error, lista de usuarios:', error);
-    res.status(500).send('Error, lista de usuarios');
+    console.error('Error, lista de agentes:', error);
+    res.status(500).send('Error, lista de agentes');
   }
 };

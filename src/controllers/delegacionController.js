@@ -239,7 +239,7 @@ export const detalleDelegacion = async (req, res) => {
 
         // Verificar si se encontró una delegación
         if (!delegacionDetalle) {
-            return res.status(404).json({ msg: `Lo sentimos, no se encontró la delegación con el ID ${id}` });
+            return res.status(404).json({ msg: `Lo sentimos, no se encontró la delegación con el id ${id}` });
         }
 
         // Convertir los valores de BigInt a String o a un tipo de dato compatible directamente en el objeto delegacionDetalle
@@ -273,7 +273,7 @@ export const actualizarDelegacion = async (req, res) => {
 
         // Verificar si se encontró al usuario
         if (!delegacion) {
-            return res.status(404).json({ msg: `Lo sentimos, no se encontró la delegacion con ID ${id}` });
+            return res.status(404).json({ msg: `Lo sentimos, no se encontró la delegacion con id ${id}` });
         }
 
         // Actualizar el la delegacion
