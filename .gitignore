@@ -1,4 +1,4 @@
 node_modules
-codigos
 .env
+codigos
 # Keep environment variables out of version control
