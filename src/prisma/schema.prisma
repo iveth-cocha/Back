@@ -103,7 +103,7 @@ model Delegacion {
   apellidos_nombres_victima                  String?    @db.VarChar(255)
   sexo_victima                               String?    @db.VarChar(255)
   edad_victima                               Int?
-  apellidos_nombres_sospechoso               String?    @db.VarChar(255)
+  apellidos_nombres_sospechoso               String?    @db.VarChar(1000)
   condicion_infractor_involucrado            String?    @db.VarChar(255)
   parentesco_detenido_sospechoso_victima     String?    @db.VarChar(255)
   alias_sospechoso                           String?    @db.VarChar(255)
